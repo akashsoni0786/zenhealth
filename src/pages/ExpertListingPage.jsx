@@ -9,15 +9,48 @@ const { Title, Text, Paragraph } = Typography;
 const ExpertListingPage = () => {
   const { type } = useParams();
   const navigate = useNavigate();
-  const experts = EXPERT_DATA[type] || [];
+
+  // Get all experts or filter by type
+  const getExperts = () => {
+    if (type === 'all') {
+      // Combine all experts from all categories
+      return [
+        ...EXPERT_DATA.yoga.map(e => ({ ...e, category: 'yoga' })),
+        ...EXPERT_DATA.nutritionist.map(e => ({ ...e, category: 'nutritionist' })),
+        ...EXPERT_DATA.gym.map(e => ({ ...e, category: 'gym' }))
+      ];
+    }
+    return (EXPERT_DATA[type] || []).map(e => ({ ...e, category: type }));
+  };
+
+  const experts = getExperts();
 
   const getTitle = () => {
     switch (type) {
       case 'yoga': return 'Yoga Instructors';
       case 'nutritionist': return 'Certified Nutritionists';
       case 'gym': return 'Personal Gym Trainers';
+      case 'all': return 'All Wellness Experts';
       default: return 'Our Experts';
     }
+  };
+
+  const getCategoryColor = (category) => {
+    const colors = {
+      yoga: 'green',
+      nutritionist: 'blue',
+      gym: 'purple'
+    };
+    return colors[category] || 'default';
+  };
+
+  const getCategoryLabel = (category) => {
+    const labels = {
+      yoga: 'Yoga',
+      nutritionist: 'Nutrition',
+      gym: 'Fitness'
+    };
+    return labels[category] || category;
   };
 
   return (
@@ -48,13 +81,22 @@ const ExpertListingPage = () => {
                 style={{ borderRadius: '24px', overflow: 'hidden', height: '100%' }}
               >
                 <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                  <Avatar 
-                    size={120} 
-                    src={expert.image} 
-                    style={{ border: '4px solid #f0f7f4', marginBottom: '16px' }} 
+                  <Avatar
+                    size={120}
+                    src={expert.image}
+                    style={{ border: '4px solid #f0f7f4', marginBottom: '16px' }}
                   />
-                  <Title level={4} style={{ margin: '0 0 4px' }}>{expert.name}</Title>
-                  <Tag color="green" icon={<Award size={12} style={{ marginRight: 4 }} />}>{expert.expertise}</Tag>
+                  <Title level={4} style={{ margin: '0 0 8px' }}>{expert.name}</Title>
+                  <Space size={4} wrap style={{ justifyContent: 'center' }}>
+                    {type === 'all' && (
+                      <Tag color={getCategoryColor(expert.category)}>
+                        {getCategoryLabel(expert.category)}
+                      </Tag>
+                    )}
+                    <Tag color="green" icon={<Award size={12} style={{ marginRight: 4 }} />}>
+                      {expert.expertise}
+                    </Tag>
+                  </Space>
                 </div>
 
                 <div style={{ background: '#fdfbf7', padding: '20px', borderRadius: '16px', marginBottom: '24px' }}>

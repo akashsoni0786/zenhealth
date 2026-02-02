@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { HealthProvider } from './context/HealthContext';
+import { SearchProvider } from './context/SearchContext';
 import AppLayout from './components/AppLayout';
 import HomeDashboard from './pages/HomeDashboard';
 import HealthAssessmentWizard from './pages/HealthAssessmentWizard';
@@ -15,6 +16,10 @@ import HealthAdvisor from './pages/HealthAdvisor';
 import YogaLibrary from './pages/YogaLibrary';
 import PricingPage from './pages/PricingPage';
 import ExpertListingPage from './pages/ExpertListingPage';
+import SearchResultsPage from './pages/SearchResultsPage';
+import BookConsultationPage from './pages/BookConsultationPage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 import './App.css';
 
 const App = () => {
@@ -41,8 +46,9 @@ const App = () => {
       }}
     >
       <HealthProvider>
-        <Router>
-          <AppLayout>
+        <SearchProvider>
+          <Router>
+            <AppLayout>
             <Routes>
               {/* Main Wellness Flow */}
               <Route path="/" element={<HomeDashboard />} />
@@ -53,15 +59,22 @@ const App = () => {
               <Route path="/chat" element={<AIChatAssistant />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/experts/:type" element={<ExpertListingPage />} />
+              <Route path="/search" element={<SearchResultsPage />} />
+              <Route path="/book/:trainerId" element={<BookConsultationPage />} />
               
               {/* Core Health Tools (from previous version) */}
               <Route path="/bmi" element={<BMICalculator />} />
               <Route path="/bp" element={<BPChecker />} />
               <Route path="/advisor" element={<HealthAdvisor />} />
               <Route path="/library" element={<YogaLibrary />} />
+
+              {/* Auth Pages */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
             </Routes>
           </AppLayout>
-        </Router>
+          </Router>
+        </SearchProvider>
       </HealthProvider>
     </ConfigProvider>
   );

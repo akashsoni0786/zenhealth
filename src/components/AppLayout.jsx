@@ -1,17 +1,19 @@
 import React from 'react';
 import { Layout, Menu, Button, Drawer, Typography, Space } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  ClipboardList, 
-  LayoutDashboard, 
-  Map, 
-  LineChart, 
-  MessageSquare, 
+import {
+  Home,
+  ClipboardList,
+  LayoutDashboard,
+  Map,
+  LineChart,
+  MessageSquare,
   Menu as MenuIcon,
-  User,
+  LogIn,
   Crown
 } from 'lucide-react';
+import AdvancedSearchBar from './AdvancedSearchBar';
+import MobileFilterDrawer from './MobileFilterDrawer';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -47,7 +49,7 @@ const AppLayout = ({ children }) => {
         trigger={null}
       >
         <div style={{ height: 64, margin: '16px 0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Title level={3} style={{ color: '#2d6a4f', margin: 0, fontFamily: 'serif' }}>ZenHealth</Title>
+          <Title level={3} style={{ color: '#2d6a4f', margin: 0, fontFamily: 'serif' }}>StayFit</Title>
         </div>
         <Menu
           mode="inline"
@@ -58,18 +60,19 @@ const AppLayout = ({ children }) => {
       </Sider>
 
       <Layout className="site-layout" style={{ transition: 'margin-left 0.2s', background: '#fdfbf7' }}>
-        <Header style={{ 
-          background: '#fff', 
-          padding: '0 24px', 
-          display: 'flex', 
-          alignItems: 'center', 
+        <Header style={{
+          background: '#fff',
+          padding: '0 24px',
+          display: 'flex',
+          alignItems: 'center',
           justifyContent: 'space-between',
           position: 'sticky',
           top: 0,
           zIndex: 99,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+          boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+          gap: 16
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
             <Button
               type="text"
               icon={<MenuIcon />}
@@ -77,15 +80,30 @@ const AppLayout = ({ children }) => {
               className="mobile-toggle"
               style={{ display: 'none' }}
             />
-            <Title level={4} style={{ margin: 0, color: '#2d6a4f' }}>Personalized Wellness</Title>
+            <Title level={4} style={{ margin: 0, color: '#2d6a4f' }} className="header-title">StayFit</Title>
           </div>
-          <Space size="large">
-             <div className="disclaimer-header">
+
+          {/* Search Bar - Desktop */}
+          <div className="header-search-wrapper">
+            <AdvancedSearchBar variant="compact" />
+          </div>
+
+          <Space size="middle" style={{ flexShrink: 0 }}>
+            <div className="disclaimer-header">
               <Text type="danger" strong style={{ fontSize: '10px' }}>
                 ⚠️ NOT FOR MEDICAL DIAGNOSIS
               </Text>
             </div>
-            <Button type="text" icon={<User size={20} />} />
+            <Link to="/login">
+              <Button type="text" icon={<LogIn size={18} />} className="login-btn">
+                Login
+              </Button>
+            </Link>
+            <Link to="/signup">
+              <Button type="primary" style={{ borderRadius: '8px' }} className="signup-btn">
+                Sign Up
+              </Button>
+            </Link>
           </Space>
         </Header>
 
@@ -94,12 +112,12 @@ const AppLayout = ({ children }) => {
         </Content>
 
         <Footer style={{ textAlign: 'center', background: 'transparent' }}>
-          ZenHealth ©2026 | Ayurvedic & Modern Health Strategy
+          StayFit ©2026 | Ayurvedic & Modern Health Strategy
         </Footer>
       </Layout>
 
       <Drawer
-        title="ZenHealth Menu"
+        title="StayFit Menu"
         placement="left"
         onClose={() => setVisible(false)}
         open={visible}
@@ -113,12 +131,26 @@ const AppLayout = ({ children }) => {
         />
       </Drawer>
 
+      <MobileFilterDrawer />
+
       <style>{`
         .site-layout { margin-left: 250px; }
+        .header-search-wrapper {
+          flex: 1;
+          max-width: 600px;
+          margin: 0 16px;
+        }
         @media (max-width: 992px) {
           .site-layout { margin-left: 0 !important; }
           .mobile-toggle { display: block !important; }
           .disclaimer-header { display: none; }
+          .header-search-wrapper { max-width: 400px; }
+        }
+        @media (max-width: 768px) {
+          .header-search-wrapper { display: none; }
+          .header-title { font-size: 18px !important; }
+          .login-btn span { display: none; }
+          .signup-btn { padding: 0 12px !important; }
         }
       `}</style>
     </Layout>

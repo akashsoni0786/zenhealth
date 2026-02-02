@@ -1,0 +1,519 @@
+/* Booking Page */
+.booking-page {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 24px 0;
+}
+
+.booking-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header */
+.booking-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.booking-header .back-btn {
+  color: #1b4332;
+}
+
+.booking-header h3 {
+  color: #1b4332;
+}
+
+/* Main Card */
+.booking-main-card {
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(27, 67, 50, 0.1);
+  border: none;
+}
+
+.booking-main-card .ant-card-body {
+  padding: 32px;
+}
+
+/* Trainer Summary */
+.trainer-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.trainer-summary-info {
+  flex: 1;
+}
+
+.trainer-summary-info .name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.trainer-summary-info .trainer-name {
+  font-size: 20px;
+  color: #1b4332;
+}
+
+.trainer-summary-info .top-rated-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trainer-summary-info .trainer-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  color: #666;
+  font-size: 14px;
+}
+
+.trainer-summary-info .trainer-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Steps */
+.booking-steps {
+  margin: 24px 0;
+}
+
+.booking-steps .ant-steps-item-finish .ant-steps-item-icon {
+  background: #1b4332;
+  border-color: #1b4332;
+}
+
+.booking-steps .ant-steps-item-process .ant-steps-item-icon {
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+  border: none;
+}
+
+/* Step Content */
+.step-content {
+  min-height: 400px;
+}
+
+/* Form Sections */
+.form-section {
+  margin-bottom: 28px;
+}
+
+.form-section h5 {
+  color: #1b4332;
+  margin-bottom: 16px;
+}
+
+/* Consultation Type */
+.consultation-type-group {
+  display: flex;
+  gap: 16px;
+}
+
+.consultation-type-group .type-option {
+  flex: 1;
+  height: auto !important;
+  padding: 20px !important;
+  border-radius: 16px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  border: 2px solid #e8e8e8 !important;
+  background: #fff !important;
+}
+
+.consultation-type-group .type-option::before {
+  display: none;
+}
+
+.consultation-type-group .type-option span:first-of-type {
+  font-weight: 600;
+  color: #333;
+}
+
+.consultation-type-group .type-option.ant-radio-button-wrapper-checked {
+  border-color: #1b4332 !important;
+  background: linear-gradient(135deg, #e8f0ed 0%, #d0e0d8 100%) !important;
+}
+
+.consultation-type-group .type-option.ant-radio-button-wrapper-checked svg {
+  color: #1b4332;
+}
+
+/* Time Slots */
+.time-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.time-slot {
+  padding: 12px 16px;
+  text-align: center;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.time-slot:hover {
+  border-color: #1b4332;
+  background: #f5f9f7;
+}
+
+.time-slot.selected {
+  border-color: #1b4332;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+  color: #fff;
+}
+
+/* Duration Options */
+.duration-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.duration-option {
+  flex: 1;
+  min-width: 140px;
+  height: auto !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 2px solid #e8e8e8 !important;
+  background: #fff !important;
+}
+
+.duration-option::before {
+  display: none;
+}
+
+.duration-option .duration-label {
+  font-weight: 600;
+}
+
+.duration-option .duration-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1b4332;
+}
+
+.duration-option.ant-radio-button-wrapper-checked {
+  border-color: #1b4332 !important;
+  background: linear-gradient(135deg, #e8f0ed 0%, #d0e0d8 100%) !important;
+}
+
+/* Details Form */
+.details-form .ant-input-lg,
+.details-form .ant-input-affix-wrapper-lg {
+  border-radius: 12px;
+}
+
+.details-form textarea {
+  border-radius: 12px;
+}
+
+/* Order Summary */
+.order-summary {
+  background: linear-gradient(135deg, #f5f9f7 0%, #e8f0ed 100%);
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.order-summary h5 {
+  margin-bottom: 16px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.summary-item.total {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1b4332;
+}
+
+/* Payment Methods */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-option {
+  padding: 16px 20px !important;
+  border: 2px solid #e8e8e8;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 !important;
+}
+
+.payment-option:hover {
+  border-color: #1b4332;
+}
+
+.payment-option.ant-radio-wrapper-checked {
+  border-color: #1b4332;
+  background: linear-gradient(135deg, #e8f0ed 0%, #d0e0d8 100%);
+}
+
+.payment-option span:last-child {
+  font-weight: 500;
+}
+
+.security-alert {
+  margin-top: 24px;
+  border-radius: 12px;
+}
+
+/* Step Navigation */
+.step-navigation {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.step-navigation .ant-btn-lg {
+  height: 48px;
+  padding: 0 32px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.step-navigation .ant-btn-primary {
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+  border: none;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.3);
+}
+
+.pay-btn {
+  min-width: 180px;
+}
+
+/* Expert Sidebar Card */
+.expert-sidebar-card {
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(27, 67, 50, 0.1);
+  border: none;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.expert-sidebar-card .ant-card-body {
+  padding: 28px;
+}
+
+.expert-header {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+
+.expert-header .featured-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
+}
+
+.expert-name {
+  margin-bottom: 4px !important;
+  color: #1b4332;
+}
+
+.expert-stats {
+  margin: 16px 0;
+}
+
+.expert-stats .stat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.certifications {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.cert-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.bio {
+  text-align: left;
+  font-size: 13px;
+  margin-bottom: 0;
+}
+
+/* Trust Card */
+.trust-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.08);
+  border: none;
+}
+
+.trust-card .ant-card-body {
+  padding: 20px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.trust-item:not(:last-child) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.trust-item > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.trust-item .ant-typography-secondary {
+  font-size: 12px;
+}
+
+/* Booking Success */
+.booking-success-details {
+  text-align: center;
+}
+
+.success-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 20px;
+  background: #f5f9f7;
+  border-radius: 12px;
+}
+
+.success-info .info-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #1b4332;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .booking-main-card .ant-card-body {
+    padding: 24px;
+  }
+
+  .consultation-type-group {
+    flex-direction: column;
+  }
+
+  .duration-group {
+    flex-direction: column;
+  }
+
+  .duration-option {
+    min-width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-page {
+    padding: 16px 0;
+  }
+
+  .booking-container {
+    padding: 0 16px;
+  }
+
+  .booking-main-card .ant-card-body {
+    padding: 20px;
+  }
+
+  .trainer-summary {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .trainer-summary-info .name-row {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .trainer-summary-info .trainer-meta {
+    justify-content: center;
+  }
+
+  .time-slots-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .step-navigation {
+    flex-direction: column;
+  }
+
+  .step-navigation .ant-btn-lg {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .time-slots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .time-slot {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .booking-steps .ant-steps-item-title {
+    font-size: 12px;
+  }
+}

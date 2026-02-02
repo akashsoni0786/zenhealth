@@ -1,0 +1,410 @@
+/* Top Trainers Section */
+.top-trainers-section {
+  padding: 60px 0;
+  position: relative;
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(27, 67, 50, 0.4);
+}
+
+/* Navigation Arrows */
+.nav-arrows {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-arrow {
+  width: 44px !important;
+  height: 44px !important;
+  background: #fff !important;
+  border: 1px solid #e8e8e8 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.nav-arrow:hover {
+  background: #1b4332 !important;
+  border-color: #1b4332 !important;
+  color: #fff !important;
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(27, 67, 50, 0.3);
+}
+
+/* Category Filter */
+.filter-container {
+  margin-bottom: 32px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.category-filter {
+  background: #fff;
+  padding: 4px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.category-filter .ant-segmented-item {
+  border-radius: 10px;
+  min-width: 100px;
+  transition: all 0.3s ease;
+}
+
+.category-filter .ant-segmented-item-selected {
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Swiper Container */
+.swiper-container {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.trainers-swiper {
+  width: 100%;
+  padding: 10px 0 50px !important;
+  overflow: visible;
+}
+
+.trainers-swiper .swiper-wrapper {
+  display: flex;
+  align-items: stretch;
+}
+
+.trainers-swiper .swiper-slide {
+  height: auto;
+  box-sizing: border-box;
+}
+
+/* Swiper Navigation */
+.trainers-swiper .swiper-button-next,
+.trainers-swiper .swiper-button-prev {
+  color: #1b4332;
+  background: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.2);
+  top: 40%;
+}
+
+.trainers-swiper .swiper-button-next {
+  right: 5px;
+}
+
+.trainers-swiper .swiper-button-prev {
+  left: 5px;
+}
+
+.trainers-swiper .swiper-button-next::after,
+.trainers-swiper .swiper-button-prev::after {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Swiper Pagination */
+.trainers-swiper .swiper-pagination {
+  bottom: 0 !important;
+}
+
+.trainers-swiper .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: #d9d9d9;
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.trainers-swiper .swiper-pagination-bullet-active {
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+  width: 28px;
+  border-radius: 5px;
+}
+
+/* Trainer Card Styles */
+.trainer-card {
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(27, 67, 50, 0.12);
+  transition: all 0.3s ease;
+  position: relative;
+  height: 100%;
+  min-height: 420px;
+}
+
+.trainer-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 44px rgba(27, 67, 50, 0.22);
+}
+
+/* Top Rated Badge */
+.top-rated-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Trainer Image */
+.trainer-image-container {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f0f7f4 0%, #e8f5e9 100%);
+}
+
+.trainer-image-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.image-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+.trainer-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.trainer-image.loaded {
+  opacity: 1;
+}
+
+.trainer-card:hover .trainer-image {
+  transform: scale(1.08);
+}
+
+/* Availability Badge */
+.availability-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(8px);
+}
+
+.availability-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+/* Trainer Content */
+.trainer-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Trainer Stats */
+.trainer-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+}
+
+.stat-item.rating {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Certifications */
+.certifications {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+/* Trainer Footer */
+.trainer-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px dashed #e8e8e8;
+  margin-top: auto;
+  gap: 8px;
+}
+
+.price-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* View All Container */
+.view-all-container {
+  text-align: center;
+  margin-top: 24px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .top-trainers-section {
+    padding: 30px 0;
+  }
+
+  .section-header {
+    flex-direction: column;
+  }
+
+  .nav-arrows {
+    display: none;
+  }
+
+  .filter-container {
+    margin-bottom: 20px;
+  }
+
+  .category-filter .ant-segmented-item {
+    min-width: 70px;
+    font-size: 12px;
+  }
+
+  .trainer-card {
+    min-height: 380px;
+  }
+
+  .trainer-image-container {
+    height: 140px;
+  }
+
+  .trainer-content {
+    padding: 12px;
+  }
+
+  .trainer-footer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .trainer-footer .ant-btn {
+    width: 100%;
+  }
+
+  .price-section {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .trainers-swiper .swiper-button-next,
+  .trainers-swiper .swiper-button-prev {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-rated-badge {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .trainer-stats {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Hover effects for filter buttons */
+.category-filter .ant-segmented-item:hover:not(.ant-segmented-item-selected) {
+  background: rgba(27, 67, 50, 0.1);
+}
+
+/* Custom scrollbar for filter */
+.filter-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.filter-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 2px;
+}
+
+.filter-container::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 2px;
+}
+
+.filter-container::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}

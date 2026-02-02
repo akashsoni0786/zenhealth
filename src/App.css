@@ -40,3 +40,26 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Explore Button Styles */
+.explore-btn {
+  user-select: none;
+}
+
+.explore-btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+.explore-btn:active {
+  transform: translateY(-1px) scale(0.98) !important;
+}
+
+/* Soft shadow for cards */
+.soft-shadow {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+}
+
+.soft-shadow:hover {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+}
