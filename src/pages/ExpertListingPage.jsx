@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Row, Col, Typography, Avatar, Button, Space, Tag, Rate, Empty, Breadcrumb } from 'antd';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { EXPERT_DATA } from '../data/expertData';
-import { ArrowLeft, Briefcase, Award, Zap } from 'lucide-react';
+import { ArrowLeft, Briefcase, Award, Zap, Calendar } from 'lucide-react';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -74,11 +74,12 @@ const ExpertListingPage = () => {
         <Row gutter={[24, 24]}>
           {experts.map((expert) => (
             <Col xs={24} md={12} lg={8} key={expert.id}>
-              <Card 
-                hoverable 
+              <Card
+                hoverable
                 variant="borderless"
                 className="soft-shadow"
-                style={{ borderRadius: '24px', overflow: 'hidden', height: '100%' }}
+                onClick={() => navigate(`/trainer-dashboard/${expert.id}`)}
+                style={{ borderRadius: '24px', overflow: 'hidden', height: '100%', cursor: 'pointer' }}
               >
                 <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                   <Avatar
@@ -119,8 +120,18 @@ const ExpertListingPage = () => {
                   </Space>
                 </div>
 
-                <Button type="primary" block size="large" style={{ borderRadius: '12px', height: '50px' }}>
-                  Book a Consultation
+                <Button
+                  type="primary"
+                  size="large"
+                  block
+                  icon={<Calendar size={16} />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/book/${expert.id}`);
+                  }}
+                  style={{ borderRadius: '12px', height: '50px' }}
+                >
+                  Book Now
                 </Button>
               </Card>
             </Col>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Row, Col, Typography, Button, Space, Tag, List, Divider } from 'antd';
-import { CheckCircle2, XCircle, Sparkles, ChevronRight } from 'lucide-react';
+import { CheckCircle2, XCircle, Sparkles, ChevronRight, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useHealth } from '../context/HealthContext';
 
@@ -132,23 +132,39 @@ const PricingPage = () => {
                 </div>
                 <Paragraph type="secondary" style={{ fontSize: '13px', minHeight: '40px' }}>{plan.subtitle}</Paragraph>
 
-                <Button 
-                  type={plan.recommended ? 'primary' : 'default'} 
-                  size="large" 
-                  block 
-                  onClick={() => handleUpgrade(plan.key)}
-                  style={{ 
-                    height: '50px', 
-                    borderRadius: '12px', 
-                    fontWeight: 600,
-                    marginBottom: '32px',
-                    background: plan.recommended ? '#2d6a4f' : 'transparent',
-                    borderColor: '#2d6a4f',
-                    color: plan.recommended ? '#fff' : '#2d6a4f'
-                  }}
-                >
-                  {plan.btnText}
-                </Button>
+                <Space direction="vertical" style={{ width: '100%', marginBottom: '32px' }} size={12}>
+                  <Button
+                    type={plan.recommended ? 'primary' : 'default'}
+                    size="large"
+                    block
+                    onClick={() => handleUpgrade(plan.key)}
+                    style={{
+                      height: '50px',
+                      borderRadius: '12px',
+                      fontWeight: 600,
+                      background: plan.recommended ? '#2d6a4f' : 'transparent',
+                      borderColor: '#2d6a4f',
+                      color: plan.recommended ? '#fff' : '#2d6a4f'
+                    }}
+                  >
+                    {plan.btnText}
+                  </Button>
+                  {(plan.key === 'active' || plan.key === 'total') && (
+                    <Button
+                      type="text"
+                      block
+                      icon={<Eye size={16} />}
+                      onClick={() => navigate(`/pricing/${plan.key}`)}
+                      style={{
+                        height: '40px',
+                        borderRadius: '10px',
+                        color: '#2d6a4f'
+                      }}
+                    >
+                      View All Features
+                    </Button>
+                  )}
+                </Space>
 
                 <Title level={5} style={{ marginBottom: '16px', fontSize: '12px', color: '#8c8c8c' }}>WHAT'S INCLUDED:</Title>
                 <List

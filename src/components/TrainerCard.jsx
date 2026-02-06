@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, Button, Tag, Typography, Space, Rate, Tooltip } from 'antd';
 import {
   Clock,
@@ -15,6 +16,7 @@ const { Text, Paragraph } = Typography;
 const FALLBACK_IMAGE = 'https://api.dicebear.com/7.x/avataaars/svg?seed=trainer';
 
 const TrainerCard = ({ trainer, onBook }) => {
+  const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
@@ -52,17 +54,30 @@ const TrainerCard = ({ trainer, onBook }) => {
 
   const availabilityConfig = getAvailabilityConfig(availability);
 
+  // Navigate to trainer profile when card is clicked
+  const handleCardClick = () => {
+    navigate(`/trainer-dashboard/${trainer.id}`);
+  };
+
+  // Handle book button click - prevent card navigation
+  const handleBookClick = (e) => {
+    e.stopPropagation();
+    onBook?.(trainer);
+  };
+
   return (
     <Card
       className="trainer-card"
       hoverable
+      onClick={handleCardClick}
       style={{
         borderRadius: '20px',
         overflow: 'hidden',
         border: 'none',
         height: '100%',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        cursor: 'pointer'
       }}
       styles={{ body: { padding: 0, flex: 1, display: 'flex', flexDirection: 'column' } }}
     >
@@ -192,7 +207,7 @@ const TrainerCard = ({ trainer, onBook }) => {
           <Button
             type="primary"
             icon={<Calendar size={16} />}
-            onClick={() => onBook?.(trainer)}
+            onClick={handleBookClick}
             disabled={availability === 'offline'}
             style={{
               borderRadius: '10px',

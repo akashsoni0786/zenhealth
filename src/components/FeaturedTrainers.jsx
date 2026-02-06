@@ -1,4 +1,4 @@
-import { Card, Avatar, Tag, Button, Typography } from 'antd';
+import { Tag, Button, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
@@ -41,9 +41,9 @@ const FeaturedTrainers = () => {
 
       <Swiper
         modules={[Autoplay, Pagination, Navigation]}
-        spaceBetween={16}
-        slidesPerView={1.1}
-        centeredSlides={true}
+        spaceBetween={0}
+        slidesPerView={1}
+        centeredSlides={false}
         loop={true}
         autoplay={{
           delay: 3500,
@@ -55,56 +55,37 @@ const FeaturedTrainers = () => {
           dynamicBullets: true
         }}
         navigation={true}
-        breakpoints={{
-          480: {
-            slidesPerView: 1.15,
-            spaceBetween: 16
-          },
-          640: {
-            slidesPerView: 1.2,
-            spaceBetween: 20
-          },
-          768: {
-            slidesPerView: 1.25,
-            spaceBetween: 24
-          },
-          992: {
-            slidesPerView: 1.3,
-            spaceBetween: 24
-          },
-          1200: {
-            slidesPerView: 1.35,
-            spaceBetween: 28
-          }
-        }}
         className="featured-swiper"
       >
         {featuredTrainers.map((trainer) => (
           <SwiperSlide key={trainer.id}>
-            <Card
+            <div
               className="featured-card"
-              hoverable
               onClick={() => navigate('/experts/all')}
             >
-              <div className="featured-card-content">
-                {/* Left: Avatar Section */}
-                <div className="featured-avatar-section">
-                  <div className="avatar-wrapper">
-                    <Avatar
-                      size={120}
-                      src={trainer.image}
-                    />
-                    <div className="featured-badge">
-                      <Award size={16} />
-                    </div>
-                  </div>
-                  <div className="avatar-rating">
-                    <Star size={14} color="#faad14" fill="#faad14" />
-                    <span>{trainer.rating}</span>
-                  </div>
-                </div>
+              <div
+                className="featured-card-bg"
+                style={{
+                  backgroundImage: `url(${trainer.image})`
+                }}
+              />
+              {/* Gradient Overlay */}
+              <div className="featured-overlay" />
 
-                {/* Center: Info */}
+              {/* Top Badge */}
+              <div className="featured-top-badge">
+                <Award size={18} color="#fff" />
+                <span>Top Rated</span>
+              </div>
+
+              {/* Rating Badge */}
+              <div className="featured-rating-badge">
+                <Star size={16} color="#faad14" fill="#faad14" />
+                <span>{trainer.rating}</span>
+              </div>
+
+              {/* Content Overlay */}
+              <div className="featured-card-content">
                 <div className="featured-info">
                   <Text strong className="featured-name">{trainer.name}</Text>
                   <Tag
@@ -116,7 +97,7 @@ const FeaturedTrainers = () => {
 
                   <div className="featured-stats">
                     <div className="stat-box">
-                      <Clock size={18} color="#2d6a4f" />
+                      <Clock size={20} color="#fff" />
                       <div className="stat-content">
                         <span className="stat-value">{trainer.experience}+</span>
                         <span className="stat-label">Years Exp</span>
@@ -131,7 +112,6 @@ const FeaturedTrainers = () => {
                   </div>
                 </div>
 
-                {/* Right: Action */}
                 <div className="featured-action">
                   <Button
                     type="primary"
@@ -143,10 +123,18 @@ const FeaturedTrainers = () => {
                   >
                     Book Now
                   </Button>
-                  <span className="view-profile">View Profile →</span>
+                  <span
+                    className="view-profile"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/trainer-dashboard/${trainer.id}`);
+                    }}
+                  >
+                    View Profile →
+                  </span>
                 </div>
               </div>
-            </Card>
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>

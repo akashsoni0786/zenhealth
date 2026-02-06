@@ -59,42 +59,145 @@ const HomeDashboard = () => {
   ];
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px' }}>
+    <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px' }}>
       {/* Featured Trainers - Horizontal Cards (Top of Page) */}
       <FeaturedTrainers />
 
-      {/* Hero Section */}
+      {/* Hero Banner Section */}
       <div style={{
-        padding: '60px 20px',
-        textAlign: 'center',
-        background: 'linear-gradient(135deg, #f5f9f7 0%, #e0ebe5 100%)',
-        borderRadius: '32px',
-        marginBottom: '60px',
-        border: '1px solid #c5d9d0',
-        boxShadow: '0 8px 32px rgba(27, 67, 50, 0.1)'
+        padding: '48px 80px',
+        background: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)',
+        borderRadius: '24px',
+        marginBottom: '80px',
+        marginTop: '20px',
+        marginLeft: '-24px',
+        marginRight: '-24px',
+        boxShadow: '0 16px 48px rgba(27, 67, 50, 0.25)',
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '60px',
+        flexWrap: 'wrap'
       }}>
-        <Title level={1} style={{ color: '#143728', fontSize: 'clamp(32px, 6vw, 56px)', fontWeight: 800 }}>
-          Your Holistic Wellness Journey.
-        </Title>
-        <Paragraph style={{ fontSize: '18px', maxWidth: 700, margin: '0 auto 32px' }}>
-          Select a goal-oriented plan and connect with top-tier professionals to transform your health.
-        </Paragraph>
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => navigate('/assessment')}
-          style={{ height: '56px', padding: '0 40px', borderRadius: '12px', fontSize: '18px' }}
-        >
-          Take Free Health Quiz
-        </Button>
+        {/* Decorative elements */}
+        <div style={{
+          position: 'absolute',
+          top: '-80px',
+          right: '10%',
+          width: '200px',
+          height: '200px',
+          borderRadius: '50%',
+          background: 'rgba(255, 255, 255, 0.05)',
+          zIndex: 0
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '-60px',
+          left: '20%',
+          width: '150px',
+          height: '150px',
+          borderRadius: '50%',
+          background: 'rgba(255, 255, 255, 0.03)',
+          zIndex: 0
+        }} />
+
+        {/* Left Content */}
+        <div style={{ position: 'relative', zIndex: 1, flex: '1 1 400px' }}>
+          <Text style={{
+            fontSize: '12px',
+            fontWeight: 700,
+            color: 'rgba(255,255,255,0.7)',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            marginBottom: '12px',
+            display: 'block'
+          }}>
+            Start Your Journey
+          </Text>
+          <Title level={2} style={{
+            color: '#fff',
+            fontSize: 'clamp(28px, 4vw, 40px)',
+            fontWeight: 700,
+            marginBottom: '12px',
+            lineHeight: 1.3
+          }}>
+            Discover Your Health Score
+          </Title>
+          <Paragraph style={{
+            fontSize: '16px',
+            margin: 0,
+            color: 'rgba(255,255,255,0.85)',
+            lineHeight: 1.6,
+            maxWidth: '500px'
+          }}>
+            Take our free assessment and get personalized recommendations from certified experts.
+          </Paragraph>
+        </div>
+
+        {/* Right Buttons */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+          <Button
+            size="large"
+            onClick={() => navigate('/assessment')}
+            style={{
+              height: '54px',
+              padding: '0 40px',
+              borderRadius: '12px',
+              fontSize: '16px',
+              fontWeight: 700,
+              background: '#fff',
+              color: '#1b4332',
+              border: 'none',
+              boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+            }}
+          >
+            Take Free Health Quiz
+          </Button>
+          <Button
+            size="large"
+            onClick={() => navigate('/experts/all')}
+            style={{
+              height: '54px',
+              padding: '0 32px',
+              borderRadius: '12px',
+              fontSize: '16px',
+              fontWeight: 600,
+              background: 'transparent',
+              borderColor: 'rgba(255,255,255,0.5)',
+              color: '#fff'
+            }}
+          >
+            Browse Experts
+          </Button>
+        </div>
       </div>
 
       {/* Main Plans Section */}
-      <div style={{ marginBottom: '80px' }}>
-        <Title level={2} style={{ textAlign: 'center', marginBottom: '40px', color: '#1b4332' }}>Explore Our Specialized Plans</Title>
-        <Row gutter={[24, 24]}>
+      <div style={{ marginBottom: '100px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+          <Text style={{
+            fontSize: '13px',
+            fontWeight: 700,
+            color: '#2d6a4f',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            marginBottom: '12px',
+            display: 'block'
+          }}>
+            Our Services
+          </Text>
+          <Title level={2} style={{ color: '#1b4332', marginBottom: '16px', fontSize: '36px' }}>
+            Explore Our Specialized Plans
+          </Title>
+          <Paragraph style={{ fontSize: '17px', color: '#666', maxWidth: 600, margin: '0 auto' }}>
+            Choose from our range of expert-led wellness programs tailored to your goals
+          </Paragraph>
+        </div>
+        <Row gutter={[28, 28]}>
           {mainPlans.map((plan) => (
-            <Col xs={24} sm={12} md={6} key={plan.type}>
+            <Col xs={24} sm={12} lg={6} key={plan.type}>
               <Card
                 hoverable
                 variant="borderless"
@@ -102,31 +205,51 @@ const HomeDashboard = () => {
                 style={{
                   height: '100%',
                   textAlign: 'center',
-                  borderRadius: '24px',
-                  padding: '20px',
+                  borderRadius: '28px',
+                  padding: '28px 24px',
                   background: plan.color,
-                  border: plan.isGradient ? 'none' : undefined
+                  border: plan.isGradient ? 'none' : '1px solid rgba(0,0,0,0.04)',
+                  minHeight: '340px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
                 }}
               >
-                <div style={{ marginBottom: '24px' }}>{plan.icon}</div>
-                <Title
-                  level={3}
-                  style={{
-                    marginBottom: '16px',
-                    color: plan.isGradient ? '#fff' : undefined
-                  }}
-                >
-                  {plan.title}
-                </Title>
-                <Paragraph
-                  style={{
-                    marginBottom: '32px',
-                    fontSize: '15px',
-                    color: plan.isGradient ? 'rgba(255,255,255,0.85)' : undefined
-                  }}
-                >
-                  {plan.desc}
-                </Paragraph>
+                <div>
+                  <div style={{
+                    marginBottom: '28px',
+                    width: '80px',
+                    height: '80px',
+                    margin: '0 auto 28px',
+                    borderRadius: '24px',
+                    background: plan.isGradient ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.04)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {plan.icon}
+                  </div>
+                  <Title
+                    level={3}
+                    style={{
+                      marginBottom: '16px',
+                      fontSize: '24px',
+                      color: plan.isGradient ? '#fff' : '#1b4332'
+                    }}
+                  >
+                    {plan.title}
+                  </Title>
+                  <Paragraph
+                    style={{
+                      marginBottom: '32px',
+                      fontSize: '15px',
+                      lineHeight: 1.7,
+                      color: plan.isGradient ? 'rgba(255,255,255,0.9)' : '#666'
+                    }}
+                  >
+                    {plan.desc}
+                  </Paragraph>
+                </div>
                 <div
                   className="explore-btn"
                   onClick={() => navigate(`/experts/${plan.type}`)}
@@ -134,12 +257,12 @@ const HomeDashboard = () => {
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
-                    padding: '12px 20px',
-                    borderRadius: '12px',
+                    gap: '10px',
+                    padding: '16px 24px',
+                    borderRadius: '14px',
                     cursor: 'pointer',
                     fontWeight: 600,
-                    fontSize: '14px',
+                    fontSize: '15px',
                     whiteSpace: 'nowrap',
                     transition: 'all 0.25s ease',
                     width: '100%',
@@ -154,15 +277,15 @@ const HomeDashboard = () => {
                     })
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = `0 6px 20px ${plan.btnColor}35`;
+                    e.currentTarget.style.transform = 'translateY(-3px)';
+                    e.currentTarget.style.boxShadow = `0 8px 24px ${plan.btnColor}40`;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
-                  {plan.btnText} <ChevronRight size={16} className="btn-arrow" />
+                  {plan.btnText} <ChevronRight size={18} className="btn-arrow" />
                 </div>
               </Card>
             </Col>
@@ -174,35 +297,101 @@ const HomeDashboard = () => {
       <TopTrainersSlider />
 
       {/* Trust Factors */}
-      <Row gutter={[32, 32]} style={{ marginBottom: '60px' }}>
-        <Col span={24}>
-           <Card variant="borderless" style={{ background: '#fff', borderRadius: '24px', padding: '20px', boxShadow: '0 8px 32px rgba(27, 67, 50, 0.1)' }}>
-              <Row gutter={32} align="middle">
-                 <Col xs={24} md={12}>
-                    <Title level={2} style={{ color: '#1b4332' }}>Why Choose StayFit Experts?</Title>
-                    <List
-                      dataSource={[
-                        'Certified & Background Checked Professionals',
-                        'Personalized 1-on-1 Consultation sessions',
-                        'Integrated tracking with our AI Health Engine',
-                        'Flexible scheduling to fit your busy life'
-                      ]}
-                      renderItem={item => (
-                        <List.Item style={{ border: 'none', padding: '10px 0' }}>
-                          <Space><CheckCircle2 size={20} color="#389e0d" /><Text style={{ fontSize: '16px' }}>{item}</Text></Space>
-                        </List.Item>
-                      )}
-                    />
-                 </Col>
-                 <Col xs={24} md={12}>
-                    <div style={{ textAlign: 'center' }}>
-                       <UserCheck size={120} color="#1b4332" strokeWidth={1} />
-                    </div>
-                 </Col>
-              </Row>
-           </Card>
-        </Col>
-      </Row>
+      <div style={{ marginBottom: '80px' }}>
+        <Card
+          variant="borderless"
+          style={{
+            background: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%)',
+            borderRadius: '32px',
+            padding: '40px',
+            boxShadow: '0 16px 48px rgba(27, 67, 50, 0.25)',
+            overflow: 'hidden',
+            position: 'relative'
+          }}
+        >
+          {/* Background decoration */}
+          <div style={{
+            position: 'absolute',
+            top: '-100px',
+            right: '-100px',
+            width: '300px',
+            height: '300px',
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.05)',
+            zIndex: 0
+          }} />
+
+          <Row gutter={[48, 48]} align="middle" style={{ position: 'relative', zIndex: 1 }}>
+            <Col xs={24} md={14}>
+              <Text style={{
+                fontSize: '13px',
+                fontWeight: 700,
+                color: 'rgba(255,255,255,0.7)',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                marginBottom: '16px',
+                display: 'block'
+              }}>
+                Why StayFit
+              </Text>
+              <Title level={2} style={{ color: '#fff', marginBottom: '32px', fontSize: '34px' }}>
+                Why Choose StayFit Experts?
+              </Title>
+              <List
+                dataSource={[
+                  { text: 'Certified & Background Checked Professionals', desc: 'Every expert is verified for your safety' },
+                  { text: 'Personalized 1-on-1 Consultation Sessions', desc: 'Tailored guidance just for you' },
+                  { text: 'Integrated Tracking with AI Health Engine', desc: 'Smart insights to monitor your progress' },
+                  { text: 'Flexible Scheduling for Your Busy Life', desc: 'Book sessions that fit your routine' }
+                ]}
+                renderItem={item => (
+                  <List.Item style={{ border: 'none', padding: '14px 0' }}>
+                    <Space align="start" size={16}>
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '10px',
+                        background: 'rgba(144, 238, 144, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <CheckCircle2 size={18} color="#90EE90" />
+                      </div>
+                      <div>
+                        <Text style={{ fontSize: '17px', fontWeight: 600, color: '#fff', display: 'block' }}>
+                          {item.text}
+                        </Text>
+                        <Text style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)' }}>
+                          {item.desc}
+                        </Text>
+                      </div>
+                    </Space>
+                  </List.Item>
+                )}
+              />
+            </Col>
+            <Col xs={24} md={10}>
+              <div style={{
+                textAlign: 'center',
+                padding: '40px',
+                background: 'rgba(255,255,255,0.08)',
+                borderRadius: '24px',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <UserCheck size={140} color="rgba(255,255,255,0.9)" strokeWidth={1} />
+                <Title level={3} style={{ color: '#fff', marginTop: '24px', marginBottom: '8px' }}>
+                  500+ Experts
+                </Title>
+                <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '16px' }}>
+                  Ready to guide your wellness journey
+                </Text>
+              </div>
+            </Col>
+          </Row>
+        </Card>
+      </div>
 
       <MedicalDisclaimer />
     </div>

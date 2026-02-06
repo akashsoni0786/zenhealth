@@ -37,7 +37,8 @@ import {
   Mail,
   MessageSquare,
   Sparkles,
-  IndianRupee
+  IndianRupee,
+  Home
 } from 'lucide-react';
 import { TRAINER_DATA, getCategoryColor, getCategoryLabel } from '../data/trainerData';
 import './BookConsultationPage.css';
@@ -103,9 +104,13 @@ const BookConsultationPage = () => {
     { value: 60, label: '60 minutes', price: Math.round(trainer.price * 1.8) }
   ];
 
-  // Calculate total price
+  // Calculate total price (home visit has additional travel fee)
   const selectedDuration = durationOptions.find(d => d.value === bookingData.duration);
-  const totalPrice = selectedDuration?.price || trainer.price;
+  const basePrice = selectedDuration?.price || trainer.price;
+  const homeVisitFee = bookingData.consultationType === 'home-visit' ? 500 : 0;
+  const subtotal = basePrice + homeVisitFee;
+  const gstAmount = Math.round(subtotal * 0.18); // 18% GST
+  const totalPrice = subtotal + gstAmount;
 
   // Update booking data
   const updateBooking = (key, value) => {
@@ -128,10 +133,31 @@ const BookConsultationPage = () => {
     setCurrentStep(currentStep - 1);
   };
 
-  // Handle booking submission
+  // Handle booking submission - Navigate to payment page
   const handleSubmitBooking = () => {
-    message.success('Booking confirmed! Check your email for details.');
-    setIsBookingComplete(true);
+    navigate('/payment', {
+      state: {
+        bookingData: {
+          ...bookingData,
+          date: bookingData.date?.format('MMM D, YYYY'),
+          name: bookingData.name,
+          email: bookingData.email,
+          phone: bookingData.phone
+        },
+        trainerData: {
+          id: trainer.id,
+          name: trainer.name,
+          image: trainer.image,
+          specialization: trainer.specialization,
+          category: trainer.category
+        },
+        totalPrice,
+        basePrice,
+        homeVisitFee,
+        subtotal,
+        gstAmount
+      }
+    });
   };
 
   // Disable past dates
@@ -177,8 +203,12 @@ const BookConsultationPage = () => {
                     <span>{bookingData.timeSlot} ({bookingData.duration} mins)</span>
                   </div>
                   <div className="info-item">
-                    {bookingData.consultationType === 'video' ? <Video size={16} /> : <MapPin size={16} />}
-                    <span>{bookingData.consultationType === 'video' ? 'Video Call' : 'In-Person'}</span>
+                    {bookingData.consultationType === 'video' ? <Video size={16} /> :
+                     bookingData.consultationType === 'home-visit' ? <Home size={16} /> : <MapPin size={16} />}
+                    <span>
+                      {bookingData.consultationType === 'video' ? 'Video Call' :
+                       bookingData.consultationType === 'home-visit' ? 'Home Visit' : 'In-Person'}
+                    </span>
                   </div>
                 </div>
                 <Alert
@@ -277,6 +307,11 @@ const BookConsultationPage = () => {
                           <MapPin size={20} />
                           <span>In-Person</span>
                           <Text type="secondary">Visit the clinic</Text>
+                        </Radio.Button>
+                        <Radio.Button value="home-visit" className="type-option">
+                          <Home size={20} />
+                          <span>Home Visit</span>
+                          <Text type="secondary">Expert visits your home</Text>
                         </Radio.Button>
                       </Radio.Group>
                     </div>
@@ -410,7 +445,7 @@ const BookConsultationPage = () => {
                       <Title level={5}>Order Summary</Title>
                       <div className="summary-item">
                         <span>Consultation with {trainer.name}</span>
-                        <span>₹{totalPrice.toLocaleString()}</span>
+                        <span>₹{basePrice.toLocaleString()}</span>
                       </div>
                       <div className="summary-item">
                         <span>Duration</span>
@@ -422,11 +457,28 @@ const BookConsultationPage = () => {
                       </div>
                       <div className="summary-item">
                         <span>Type</span>
-                        <span>{bookingData.consultationType === 'video' ? 'Video Call' : 'In-Person'}</span>
+                        <span>
+                          {bookingData.consultationType === 'video' ? 'Video Call' :
+                           bookingData.consultationType === 'home-visit' ? 'Home Visit' : 'In-Person'}
+                        </span>
+                      </div>
+                      {homeVisitFee > 0 && (
+                        <div className="summary-item">
+                          <span>Home Visit Fee</span>
+                          <span>₹{homeVisitFee.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="summary-item">
+                        <span>Subtotal</span>
+                        <span>₹{subtotal.toLocaleString()}</span>
+                      </div>
+                      <div className="summary-item">
+                        <span>GST (18%)</span>
+                        <span>₹{gstAmount.toLocaleString()}</span>
                       </div>
                       <Divider />
                       <div className="summary-item total">
-                        <span>Total</span>
+                        <span>Total Amount</span>
                         <span>₹{totalPrice.toLocaleString()}</span>
                       </div>
                     </div>

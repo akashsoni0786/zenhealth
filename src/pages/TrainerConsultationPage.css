@@ -1,0 +1,369 @@
+/* Trainer Consultation Page */
+.trainer-consultation-page {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 24px 0;
+}
+
+.trainer-dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.dashboard-header .back-btn {
+  color: #1b4332;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.header-content h3 {
+  color: #1b4332;
+}
+
+.notification-btn {
+  position: relative;
+}
+
+.notification-btn .ant-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+}
+
+/* Trainer Profile Card */
+.trainer-profile-card {
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(27, 67, 50, 0.1);
+  border: none;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fcfa 100%);
+}
+
+.trainer-profile-card .ant-card-body {
+  padding: 24px;
+}
+
+.profile-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-info .name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f5f9f7;
+  border-radius: 12px;
+}
+
+/* Dashboard Tabs */
+.dashboard-tabs .ant-tabs-nav {
+  margin-bottom: 24px;
+}
+
+.dashboard-tabs .ant-tabs-tab {
+  padding: 12px 0;
+}
+
+.tab-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Stats Row */
+.stats-row {
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.08);
+  height: 100%;
+}
+
+.stat-card .ant-card-body {
+  padding: 20px;
+}
+
+.stat-card.earnings .ant-statistic-content-value {
+  color: #52c41a;
+}
+
+.stat-card .ant-statistic-title {
+  color: #666;
+  font-size: 13px;
+}
+
+.stat-card .ant-statistic-content-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1b4332;
+}
+
+/* Upcoming Card */
+.upcoming-card,
+.pending-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.08);
+  height: 100%;
+}
+
+.upcoming-card .ant-card-head-title,
+.pending-card .ant-card-head-title {
+  color: #1b4332;
+  font-weight: 600;
+}
+
+.list-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pending-header {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+/* Performance Card */
+.performance-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.08);
+}
+
+.performance-item {
+  text-align: center;
+}
+
+.performance-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #666;
+  font-size: 14px;
+}
+
+.performance-value {
+  margin-bottom: 12px;
+}
+
+.performance-value .big-number {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1b4332;
+}
+
+.performance-value .small-text {
+  font-size: 16px;
+  color: #999;
+}
+
+/* Consultations Table */
+.consultations-table-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.08);
+}
+
+.consultations-table .ant-table-thead > tr > th {
+  background: #f5f9f7;
+  font-weight: 600;
+  color: #1b4332;
+}
+
+.client-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.client-info {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Calendar Card */
+.calendar-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.08);
+}
+
+.calendar-events {
+  padding-top: 4px;
+}
+
+.calendar-event {
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.calendar-event.upcoming {
+  background: rgba(24, 144, 255, 0.1);
+  color: #1890ff;
+}
+
+.calendar-event.completed {
+  background: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+}
+
+.calendar-event.pending {
+  background: rgba(250, 173, 20, 0.1);
+  color: #faad14;
+}
+
+.calendar-event.cancelled {
+  background: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+}
+
+.calendar-more {
+  font-size: 9px;
+  color: #999;
+  text-align: center;
+}
+
+/* Clients Card */
+.clients-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.08);
+}
+
+.client-card {
+  border-radius: 16px;
+  text-align: center;
+}
+
+.client-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.client-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.client-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Modal */
+.consultation-detail-modal .detail-content {
+  padding: 8px 0;
+}
+
+.consultation-detail-modal .detail-client {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.consultation-detail-modal .detail-section {
+  margin-bottom: 16px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .trainer-dashboard-container {
+    padding: 0 16px;
+  }
+
+  .profile-left {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-info {
+    align-items: center;
+  }
+
+  .profile-info .name-row {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .trainer-consultation-page {
+    padding: 16px 0;
+  }
+
+  .dashboard-header {
+    flex-wrap: wrap;
+  }
+
+  .header-content {
+    order: 3;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .stat-card .ant-statistic-content-value {
+    font-size: 20px;
+  }
+
+  .performance-value .big-number {
+    font-size: 28px;
+  }
+
+  .consultations-table .ant-table {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .trainer-profile-card .ant-card-body {
+    padding: 16px;
+  }
+
+  .profile-stat {
+    padding: 12px;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .stat-card .ant-card-body {
+    padding: 16px;
+  }
+}

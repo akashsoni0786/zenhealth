@@ -63,3 +63,339 @@
 .soft-shadow:hover {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
 }
+
+/* ==================== DARK THEME STYLES ==================== */
+.dark-theme {
+  --bg-primary: #0f1419;
+  --bg-secondary: #1a1f26;
+  --bg-card: #1e252d;
+  --bg-hover: #252d37;
+  --text-primary: #e7e9ea;
+  --text-secondary: #8b98a5;
+  --text-muted: #6e7a88;
+  --border-color: #2f3943;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --accent-green: #40916c;
+  --accent-green-light: #52a77d;
+}
+
+/* Body and Root */
+.dark-theme {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Ant Design Layout */
+.dark-theme .ant-layout {
+  background: var(--bg-primary) !important;
+}
+
+.dark-theme .ant-layout-content {
+  background: var(--bg-primary) !important;
+}
+
+.dark-theme .ant-layout-sider {
+  background: var(--bg-secondary) !important;
+  box-shadow: 2px 0 8px var(--shadow-color) !important;
+}
+
+.dark-theme .ant-layout-header {
+  background: var(--bg-secondary) !important;
+  box-shadow: 0 2px 12px var(--shadow-color) !important;
+}
+
+.dark-theme .ant-layout-footer {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Cards */
+.dark-theme .ant-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 0 4px 20px var(--shadow-color) !important;
+}
+
+.dark-theme .ant-card-head {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-card-body {
+  color: var(--text-primary) !important;
+}
+
+/* Menu */
+.dark-theme .ant-menu {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-menu-item {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .ant-menu-item:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-menu-item-selected {
+  background: var(--accent-green) !important;
+  color: #fff !important;
+}
+
+.dark-theme .ant-menu-item a {
+  color: inherit !important;
+}
+
+/* Typography */
+.dark-theme .ant-typography {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-typography.ant-typography-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme h1, .dark-theme h2, .dark-theme h3, .dark-theme h4, .dark-theme h5, .dark-theme h6,
+.dark-theme .ant-typography h1, .dark-theme .ant-typography h2, .dark-theme .ant-typography h3 {
+  color: var(--text-primary) !important;
+}
+
+/* Buttons */
+.dark-theme .ant-btn-default {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-btn-default:hover {
+  background: var(--bg-hover) !important;
+  border-color: var(--accent-green) !important;
+  color: var(--accent-green) !important;
+}
+
+.dark-theme .ant-btn-text {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .ant-btn-text:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Input fields */
+.dark-theme .ant-input,
+.dark-theme .ant-input-affix-wrapper,
+.dark-theme .ant-select-selector,
+.dark-theme .ant-picker {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-input::placeholder,
+.dark-theme .ant-input-affix-wrapper input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.dark-theme .ant-input:focus,
+.dark-theme .ant-input-affix-wrapper:focus,
+.dark-theme .ant-input-affix-wrapper-focused,
+.dark-theme .ant-select-focused .ant-select-selector {
+  border-color: var(--accent-green) !important;
+  box-shadow: 0 0 0 2px rgba(64, 145, 108, 0.2) !important;
+}
+
+/* Select dropdown */
+.dark-theme .ant-select-dropdown {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.dark-theme .ant-select-item {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-select-item:hover {
+  background: var(--bg-hover) !important;
+}
+
+.dark-theme .ant-select-item-option-selected {
+  background: var(--accent-green) !important;
+  color: #fff !important;
+}
+
+/* Tabs */
+.dark-theme .ant-tabs {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-tabs-nav {
+  background: var(--bg-card) !important;
+}
+
+.dark-theme .ant-tabs-tab {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .ant-tabs-tab:hover {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--accent-green) !important;
+}
+
+/* Switch */
+.dark-theme .ant-switch {
+  background: var(--bg-hover) !important;
+}
+
+.dark-theme .ant-switch-checked {
+  background: var(--accent-green) !important;
+}
+
+/* Divider */
+.dark-theme .ant-divider {
+  border-color: var(--border-color) !important;
+}
+
+/* Modal */
+.dark-theme .ant-modal-content {
+  background: var(--bg-card) !important;
+  box-shadow: 0 10px 40px var(--shadow-color) !important;
+}
+
+.dark-theme .ant-modal-header {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark-theme .ant-modal-title {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-modal-close {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .ant-modal-footer {
+  border-color: var(--border-color) !important;
+}
+
+/* Drawer */
+.dark-theme .ant-drawer-content {
+  background: var(--bg-secondary) !important;
+}
+
+.dark-theme .ant-drawer-header {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark-theme .ant-drawer-title {
+  color: var(--text-primary) !important;
+}
+
+/* Form */
+.dark-theme .ant-form-item-label > label {
+  color: var(--text-primary) !important;
+}
+
+/* Tag */
+.dark-theme .ant-tag {
+  background: var(--bg-hover) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Avatar */
+.dark-theme .ant-avatar {
+  background: var(--accent-green) !important;
+}
+
+/* List */
+.dark-theme .ant-list-item {
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Segmented */
+.dark-theme .ant-segmented {
+  background: var(--bg-card) !important;
+}
+
+.dark-theme .ant-segmented-item {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .ant-segmented-item:hover {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .ant-segmented-item-selected {
+  background: var(--accent-green) !important;
+  color: #fff !important;
+}
+
+/* Progress */
+.dark-theme .ant-progress-text {
+  color: var(--text-primary) !important;
+}
+
+/* Swiper */
+.dark-theme .swiper-pagination-bullet {
+  background: var(--text-muted) !important;
+}
+
+.dark-theme .swiper-pagination-bullet-active {
+  background: var(--accent-green) !important;
+}
+
+.dark-theme .swiper-button-next,
+.dark-theme .swiper-button-prev {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Custom components dark mode overrides */
+.dark-theme .soft-shadow {
+  box-shadow: 0 8px 32px var(--shadow-color) !important;
+}
+
+.dark-theme .soft-shadow:hover {
+  box-shadow: 0 16px 48px var(--shadow-color) !important;
+}
+
+/* Featured trainers section */
+.dark-theme .featured-trainers-section {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Top trainers section */
+.dark-theme .top-trainers-section {
+  background: var(--bg-primary) !important;
+}
+
+.dark-theme .trainer-card {
+  background: var(--bg-card) !important;
+  box-shadow: 0 8px 28px var(--shadow-color) !important;
+}
+
+.dark-theme .trainer-card:hover {
+  box-shadow: 0 16px 44px var(--shadow-color) !important;
+}
+
+/* Settings page specific */
+.dark-theme .setting-item-icon {
+  background: var(--bg-hover) !important;
+}
+
+/* Transition for smooth theme switching */
+body, .ant-layout, .ant-card, .ant-menu, .ant-btn {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

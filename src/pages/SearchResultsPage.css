@@ -271,6 +271,21 @@
   border: none;
 }
 
+.list-item-action .view-btn {
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-weight: 500;
+  border-color: #1b4332;
+  color: #1b4332;
+}
+
+.list-item-action .view-btn:hover {
+  background: #e8f0ed;
+  border-color: #1b4332;
+  color: #1b4332;
+}
+
 /* Pagination */
 .pagination-container {
   display: flex;

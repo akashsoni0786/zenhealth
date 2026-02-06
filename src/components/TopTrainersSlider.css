@@ -1,7 +1,8 @@
 /* Top Trainers Section */
 .top-trainers-section {
-  padding: 60px 0;
+  padding: 80px 0;
   position: relative;
+  margin-bottom: 20px;
 }
 
 /* Section Header */
@@ -9,9 +10,9 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
 }
 
 .header-content {
@@ -19,14 +20,14 @@
 }
 
 .header-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 20px rgba(27, 67, 50, 0.4);
+  box-shadow: 0 8px 24px rgba(27, 67, 50, 0.35);
 }
 
 /* Navigation Arrows */
@@ -54,7 +55,7 @@
 
 /* Category Filter */
 .filter-container {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
   overflow-x: auto;
   padding-bottom: 8px;
 }
@@ -309,10 +310,27 @@
   flex-direction: column;
 }
 
+.trainer-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.trainer-actions .ant-btn-default {
+  border-color: #1b4332;
+  color: #1b4332;
+}
+
+.trainer-actions .ant-btn-default:hover {
+  background: #e8f0ed;
+  border-color: #1b4332;
+  color: #1b4332;
+}
+
 /* View All Container */
 .view-all-container {
   text-align: center;
-  margin-top: 24px;
+  margin-top: 40px;
 }
 
 /* Responsive Adjustments */

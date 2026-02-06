@@ -20,7 +20,8 @@ import {
   List,
   Star,
   Clock,
-  Sparkles
+  Sparkles,
+  Eye
 } from 'lucide-react';
 import { useSearch } from '../context/SearchContext';
 import AdvancedSearchBar from '../components/AdvancedSearchBar';
@@ -249,13 +250,22 @@ const SearchResultsPage = () => {
                               per session
                             </Text>
                           </div>
-                          <Button
-                            type="primary"
-                            onClick={() => handleBook(trainer)}
-                            className="book-btn"
-                          >
-                            Book Now
-                          </Button>
+                          <Space>
+                            <Button
+                              icon={<Eye size={16} />}
+                              onClick={() => navigate(`/trainer-dashboard/${trainer.id}`)}
+                              className="view-btn"
+                            >
+                              View
+                            </Button>
+                            <Button
+                              type="primary"
+                              onClick={() => handleBook(trainer)}
+                              className="book-btn"
+                            >
+                              Book Now
+                            </Button>
+                          </Space>
                         </div>
                       </div>
                     </Card>
