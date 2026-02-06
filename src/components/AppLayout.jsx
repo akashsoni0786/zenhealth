@@ -12,11 +12,14 @@ import {
   LogIn,
   Settings,
   User,
-  LogOut
+  LogOut,
+  Dumbbell,
+  ShieldCheck
 } from 'lucide-react';
 import AdvancedSearchBar from './AdvancedSearchBar';
 import MobileFilterDrawer from './MobileFilterDrawer';
 import { useAuth } from '../context/AuthContext';
+import { useTrainerAuth } from '../context/TrainerAuthContext';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -26,6 +29,7 @@ const AppLayout = ({ children }) => {
   const navigate = useNavigate();
   const [visible, setVisible] = React.useState(false);
   const { user, isAuthenticated, logout } = useAuth();
+  const { adminLoggedIn } = useTrainerAuth();
 
   const menuItems = [
     { key: '/', icon: <Home size={22} />, label: <Link to="/">Home</Link> },
@@ -34,6 +38,9 @@ const AppLayout = ({ children }) => {
     { key: '/health-plan', icon: <Map size={22} />, label: <Link to="/health-plan">My Plan</Link> },
     { key: '/tracker', icon: <LineChart size={22} />, label: <Link to="/tracker">Progress</Link> },
     { key: '/chat', icon: <MessageSquare size={22} />, label: <Link to="/chat">Health AI</Link> },
+    { type: 'divider' },
+    { key: '/trainer-login', icon: <Dumbbell size={22} />, label: <Link to="/trainer-login">Join as Trainer</Link> },
+    ...(adminLoggedIn ? [{ key: '/admin', icon: <ShieldCheck size={22} />, label: <Link to="/admin">Admin Panel</Link> }] : []),
     { type: 'divider' },
     { key: '/settings', icon: <Settings size={22} />, label: <Link to="/settings">Settings</Link> },
   ];

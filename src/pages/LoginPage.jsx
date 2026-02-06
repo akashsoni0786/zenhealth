@@ -113,7 +113,6 @@ const LoginPage = () => {
             name="password"
             rules={[
               { required: true, message: 'Please enter your password' },
-              { min: 6, message: 'Password must be at least 6 characters' }
             ]}
           >
             <Input.Password

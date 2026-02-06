@@ -1,0 +1,365 @@
+/* ─── Trainer Auth Page ─── */
+.trainer-auth-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(180deg, #f8faf9 0%, #e8f5e9 100%);
+}
+
+/* ─── Auth Card ─── */
+.trainer-auth-card {
+  max-width: 500px;
+  width: 100%;
+  border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(45, 106, 79, 0.1);
+  border: none;
+  overflow: hidden;
+}
+
+.trainer-auth-card .ant-card-body {
+  padding: 36px 32px;
+}
+
+/* ─── Header Icon ─── */
+.trainer-auth-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 6px 20px rgba(45, 106, 79, 0.3);
+}
+
+.trainer-auth-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.trainer-auth-header h2 {
+  color: #2d6a4f;
+  margin: 0 0 6px 0;
+  font-weight: 700;
+}
+
+.trainer-auth-header p {
+  color: #888;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ─── Tabs ─── */
+.trainer-auth-card .ant-tabs-nav {
+  margin-bottom: 24px;
+}
+
+.trainer-auth-card .ant-tabs-tab {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.trainer-auth-card .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #2d6a4f;
+}
+
+.trainer-auth-card .ant-tabs-ink-bar {
+  background: #2d6a4f;
+}
+
+/* ─── Login Method Toggle ─── */
+.login-method-toggle {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 24px;
+  background: #f5f9f7;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.login-method-btn {
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.login-method-btn:hover {
+  color: #2d6a4f;
+}
+
+.login-method-btn.active {
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.25);
+}
+
+/* ─── Submit Button ─── */
+.trainer-submit-btn {
+  height: 50px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+  box-shadow: 0 4px 16px rgba(45, 106, 79, 0.25);
+  transition: all 0.3s ease;
+}
+
+.trainer-submit-btn:hover {
+  background: linear-gradient(135deg, #245a42 0%, #37805e 100%);
+  box-shadow: 0 6px 20px rgba(45, 106, 79, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ─── Form Fields ─── */
+.trainer-auth-card .ant-input,
+.trainer-auth-card .ant-input-password,
+.trainer-auth-card .ant-input-affix-wrapper,
+.trainer-auth-card .ant-select-selector {
+  border-radius: 12px !important;
+  height: 48px;
+}
+
+.trainer-auth-card .ant-input-affix-wrapper .ant-input {
+  height: auto;
+}
+
+/* ─── OTP Section ─── */
+.otp-section {
+  text-align: center;
+}
+
+.otp-section .ant-input {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 12px;
+  font-weight: 700;
+  height: 56px;
+}
+
+.otp-info-text {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.otp-resend-link {
+  color: #2d6a4f;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.otp-resend-link:hover {
+  text-decoration: underline;
+}
+
+/* ─── Forgot Link ─── */
+.forgot-link {
+  color: #2d6a4f;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.forgot-link:hover {
+  color: #245a42;
+  text-decoration: underline;
+}
+
+/* ─── Workflow Steps ─── */
+.workflow-steps {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 28px;
+  padding: 20px 16px;
+  background: #f5f9f7;
+  border-radius: 16px;
+}
+
+.workflow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.workflow-step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.workflow-step-label {
+  font-size: 11px;
+  color: #555;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.workflow-step-arrow {
+  color: #b7d4c5;
+  flex-shrink: 0;
+  margin-bottom: 18px;
+}
+
+/* ─── Footer Links ─── */
+.trainer-auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #eef3f0;
+}
+
+.trainer-auth-footer a {
+  color: #2d6a4f;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.trainer-auth-footer a:hover {
+  color: #1b4332;
+  text-decoration: underline;
+}
+
+.trainer-auth-footer .footer-divider {
+  margin: 0 12px;
+  color: #ccc;
+}
+
+/* ─── Forgot Password Modal ─── */
+.forgot-modal .ant-modal-content {
+  border-radius: 20px;
+}
+
+.forgot-modal .ant-modal-header {
+  border-radius: 20px 20px 0 0;
+}
+
+.forgot-modal-step {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.forgot-modal-step .step-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.forgot-modal-step p {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 480px) {
+  .trainer-auth-page {
+    padding: 20px 12px;
+    min-height: auto;
+  }
+
+  .trainer-auth-card .ant-card-body {
+    padding: 24px 18px;
+  }
+
+  .trainer-auth-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+  }
+
+  .trainer-auth-header h2 {
+    font-size: 20px;
+  }
+
+  .login-method-toggle {
+    gap: 6px;
+  }
+
+  .login-method-btn {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .workflow-steps {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 12px;
+  }
+
+  .workflow-step {
+    flex: 0 0 auto;
+    width: calc(50% - 16px);
+  }
+
+  .workflow-step-arrow {
+    display: none;
+  }
+
+  .workflow-step-number {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .workflow-step-label {
+    font-size: 10px;
+  }
+
+  .trainer-submit-btn {
+    height: 46px;
+    font-size: 15px;
+  }
+
+  .trainer-auth-footer {
+    font-size: 13px;
+  }
+
+  .trainer-auth-footer .footer-divider {
+    display: block;
+    margin: 8px 0;
+    visibility: hidden;
+  }
+}

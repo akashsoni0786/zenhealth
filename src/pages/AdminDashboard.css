@@ -1,0 +1,536 @@
+/* ═══════════════════════════════════════════════════════════════
+   Admin Dashboard Styles
+   Theme: Purple (#722ed1) for admin, Green (#2d6a4f) for trainers
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Page Layout ─── */
+.admin-page {
+  background: #f8faf9;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ─── Login Wrapper ─── */
+.admin-login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.admin-login-card {
+  max-width: 420px;
+  width: 100%;
+  border-radius: 24px;
+  box-shadow: 0 12px 48px rgba(114, 46, 209, 0.12);
+  border: none;
+  overflow: hidden;
+}
+
+.admin-login-card .ant-card-body {
+  padding: 40px 32px;
+}
+
+.admin-login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.admin-login-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #722ed1 0%, #9254de 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.admin-login-header h3 {
+  color: #722ed1;
+  margin-bottom: 4px !important;
+}
+
+.admin-login-card .ant-btn-primary {
+  background: linear-gradient(135deg, #722ed1 0%, #9254de 100%);
+  border: none;
+  height: 44px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.admin-login-card .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #531dab 0%, #722ed1 100%);
+}
+
+.admin-login-card .ant-input-affix-wrapper {
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.admin-login-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* ─── Dashboard Header ─── */
+.admin-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #722ed1 0%, #9254de 50%, #b37feb 100%);
+  border-radius: 20px;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(114, 46, 209, 0.25);
+}
+
+.admin-dashboard-header h3 {
+  color: #fff !important;
+  margin: 0 !important;
+}
+
+.admin-dashboard-header .ant-typography {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.admin-header-left h3 {
+  margin-bottom: 2px !important;
+}
+
+.admin-logout-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+  font-weight: 500;
+  height: 40px;
+}
+
+.admin-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ─── Stats Cards ─── */
+.admin-stats-row {
+  margin-bottom: 28px;
+}
+
+.admin-stat-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.admin-stat-card .ant-card-body {
+  padding: 20px;
+  position: relative;
+}
+
+.admin-stat-card .ant-statistic-title {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.admin-stat-card .ant-statistic-content-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-card-green {
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+}
+
+.stat-card-orange {
+  background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+}
+
+.stat-card-emerald {
+  background: linear-gradient(135deg, #1b7a3d 0%, #52c41a 100%);
+}
+
+.stat-card-red {
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+}
+
+/* ─── Filter Tabs ─── */
+.admin-filter-tabs {
+  margin-bottom: 24px;
+}
+
+.admin-filter-tabs .ant-tabs-nav {
+  margin-bottom: 0;
+}
+
+.admin-filter-tabs .ant-tabs-tab {
+  padding: 10px 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.admin-filter-tabs .ant-tabs-tab:hover {
+  color: #722ed1;
+}
+
+.admin-filter-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #722ed1;
+  font-weight: 600;
+}
+
+.admin-filter-tabs .ant-tabs-ink-bar {
+  background: #722ed1;
+  height: 3px;
+  border-radius: 3px;
+}
+
+.filter-tab-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ─── Trainer Application Cards ─── */
+.trainer-app-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  height: 100%;
+}
+
+.trainer-app-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(114, 46, 209, 0.12);
+}
+
+.trainer-app-card .ant-card-body {
+  padding: 20px;
+}
+
+.trainer-app-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.trainer-app-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.trainer-app-avatar-placeholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.trainer-app-name-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.trainer-app-name-block h5 {
+  margin: 0 0 4px 0 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trainer-app-email {
+  font-size: 12px;
+  color: #888;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trainer-app-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.trainer-app-details {
+  margin-bottom: 14px;
+}
+
+.trainer-app-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.trainer-app-detail-row svg {
+  color: #722ed1;
+  flex-shrink: 0;
+}
+
+.trainer-app-remarks {
+  margin-bottom: 14px;
+}
+
+.trainer-app-date {
+  font-size: 12px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.trainer-app-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.trainer-app-actions .ant-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.trainer-app-actions .ant-btn-sm {
+  height: 32px;
+  padding: 0 12px;
+}
+
+/* ─── Action Modals ─── */
+.admin-action-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.admin-action-modal .ant-modal-header {
+  border-radius: 16px 16px 0 0;
+}
+
+.admin-action-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.admin-action-modal .ant-input,
+.admin-action-modal textarea.ant-input {
+  border-radius: 10px;
+}
+
+/* ─── Detail Modal ─── */
+.admin-detail-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.admin-detail-modal .ant-modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.admin-detail-modal .ant-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-detail-modal .ant-modal-body::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 3px;
+}
+
+.admin-detail-modal .ant-modal-body::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 3px;
+}
+
+.admin-detail-modal .ant-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}
+
+.detail-section-card {
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #f0f0f0;
+}
+
+.detail-section-card .ant-card-head {
+  border-bottom: 1px solid #f5f5f5;
+  min-height: 44px;
+}
+
+.detail-section-card .ant-card-head-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #722ed1;
+}
+
+.detail-section-card .ant-card-body {
+  padding: 16px 20px;
+}
+
+.detail-info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 14px;
+}
+
+.detail-info-row svg {
+  color: #722ed1;
+  flex-shrink: 0;
+}
+
+.detail-info-label {
+  color: #888;
+  min-width: 100px;
+}
+
+.detail-info-value {
+  color: #333;
+  font-weight: 500;
+}
+
+.detail-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+}
+
+.detail-modal-actions .ant-btn {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* ─── Empty State ─── */
+.admin-empty-state {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+/* ─── Status Timeline ─── */
+.admin-detail-modal .ant-timeline {
+  padding-top: 8px;
+}
+
+.admin-detail-modal .ant-timeline-item-content {
+  font-size: 13px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .admin-page {
+    padding: 12px;
+  }
+
+  .admin-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 16px;
+  }
+
+  .admin-dashboard-header h3 {
+    font-size: 20px !important;
+  }
+
+  .admin-logout-btn {
+    width: 100%;
+  }
+
+  .admin-stat-card .ant-statistic-content-value {
+    font-size: 22px;
+  }
+
+  .admin-stat-card .ant-card-body {
+    padding: 16px;
+  }
+
+  .admin-login-card .ant-card-body {
+    padding: 28px 20px;
+  }
+
+  .admin-login-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+  }
+
+  .trainer-app-card .ant-card-body {
+    padding: 16px;
+  }
+
+  .trainer-app-avatar,
+  .trainer-app-avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    font-size: 18px;
+  }
+
+  .trainer-app-actions {
+    flex-direction: column;
+  }
+
+  .trainer-app-actions .ant-btn {
+    width: 100%;
+  }
+
+  .admin-detail-modal .ant-modal-body {
+    max-height: 65vh;
+    padding: 16px;
+  }
+
+  .detail-modal-actions {
+    flex-direction: column;
+  }
+
+  .detail-modal-actions .ant-btn {
+    width: 100%;
+  }
+
+  .admin-filter-tabs .ant-tabs-tab {
+    padding: 8px 4px;
+    font-size: 13px;
+  }
+}

@@ -5,6 +5,7 @@ import { HealthProvider } from './context/HealthContext';
 import { SearchProvider } from './context/SearchContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { AuthProvider } from './context/AuthContext';
+import { TrainerAuthProvider } from './context/TrainerAuthContext';
 import AppLayout from './components/AppLayout';
 import HomeDashboard from './pages/HomeDashboard';
 import HealthAssessmentWizard from './pages/HealthAssessmentWizard';
@@ -27,6 +28,10 @@ import PaymentPage from './pages/PaymentPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import SettingsPage from './pages/SettingsPage';
+import TrainerLoginPage from './pages/TrainerLoginPage';
+import TrainerProfileSetup from './pages/TrainerProfileSetup';
+import TrainerDashboardPage from './pages/TrainerDashboardPage';
+import AdminDashboard from './pages/AdminDashboard';
 import './App.css';
 
 const App = () => {
@@ -53,6 +58,7 @@ const App = () => {
       }}
     >
       <AuthProvider>
+        <TrainerAuthProvider>
         <SettingsProvider>
           <HealthProvider>
             <SearchProvider>
@@ -75,7 +81,7 @@ const App = () => {
               <Route path="/trainer-dashboard/:trainerId" element={<TrainerConsultationPage />} />
               <Route path="/payment" element={<PaymentPage />} />
 
-              {/* Core Health Tools (from previous version) */}
+              {/* Core Health Tools */}
               <Route path="/bmi" element={<BMICalculator />} />
               <Route path="/bp" element={<BPChecker />} />
               <Route path="/advisor" element={<HealthAdvisor />} />
@@ -85,6 +91,14 @@ const App = () => {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
 
+              {/* Trainer Auth & Dashboard */}
+              <Route path="/trainer-login" element={<TrainerLoginPage />} />
+              <Route path="/trainer-profile-setup" element={<TrainerProfileSetup />} />
+              <Route path="/trainer-dashboard" element={<TrainerDashboardPage />} />
+
+              {/* Admin */}
+              <Route path="/admin" element={<AdminDashboard />} />
+
               {/* Settings */}
               <Route path="/settings" element={<SettingsPage />} />
               </Routes>
@@ -93,6 +107,7 @@ const App = () => {
             </SearchProvider>
           </HealthProvider>
         </SettingsProvider>
+        </TrainerAuthProvider>
       </AuthProvider>
     </ConfigProvider>
   );
