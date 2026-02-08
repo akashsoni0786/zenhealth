@@ -16,7 +16,9 @@
       "mcp__plugin_playwright_playwright__browser_close",
       "Bash(npx vite:*)",
       "Bash(timeout:*)",
-      "mcp__plugin_playwright_playwright__browser_run_code"
+      "mcp__plugin_playwright_playwright__browser_run_code",
+      "Bash(git restore:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nFull project update: server setup, UI improvements, trainer system, and admin features\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
