@@ -178,3 +178,24 @@ export const getCategoryLabel = (category) => {
   };
   return labels[category] || category;
 };
+
+// Convert a verified registered trainer to TRAINER_DATA format
+export const convertRegisteredTrainer = (trainer) => {
+  const p = trainer.profile || {};
+  return {
+    id: `reg_${trainer.id}`,
+    name: p.name || trainer.name,
+    category: p.category || trainer.category,
+    specialization: p.specialization || p.qualification || 'General',
+    experience: Number(p.experience) || 1,
+    rating: 4.5,
+    reviewCount: 0,
+    bio: p.bio || `Certified ${getCategoryLabel(p.category || trainer.category)} professional.`,
+    availability: 'available',
+    price: Number(p.consultationFee) || 1000,
+    image: p.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(trainer.name)}`,
+    isTopRated: false,
+    certifications: p.certifications || [],
+    isRegistered: true
+  };
+};

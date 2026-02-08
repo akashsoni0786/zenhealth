@@ -136,7 +136,7 @@ const SubscriptionModal = ({ onUpgrade }) => {
 
 export const PremiumGate = ({ children, plan, level = 'active' }) => {
   const { planLevel } = useHealth();
-  
+
   const hasAccess = (current, required) => {
     if (required === 'active') return current === 'active' || current === 'total';
     if (required === 'total') return current === 'total';
@@ -145,11 +145,15 @@ export const PremiumGate = ({ children, plan, level = 'active' }) => {
 
   if (hasAccess(planLevel, level)) return children;
 
+  const handleUpgradeClick = () => {
+    window.location.href = '/pricing';
+  };
+
   return (
-    <Card 
+    <Card
       variant="borderless"
-      style={{ 
-        textAlign: 'center', padding: '30px 20px', 
+      style={{
+        textAlign: 'center', padding: '30px 20px',
         background: 'linear-gradient(135deg, #fdfbf7 0%, #f5f5f5 100%)',
         borderRadius: '24px', border: '1px dashed #d9d9d9'
       }}
@@ -159,7 +163,7 @@ export const PremiumGate = ({ children, plan, level = 'active' }) => {
         title={`${level.toUpperCase()} Feature`}
         subTitle={`This advanced insight is available on the ${level} plan.`}
         extra={[
-          <Button type="primary" key="upgrade" onClick={() => window.dispatchEvent(new CustomEvent('openSubModal'))}>
+          <Button type="primary" key="upgrade" onClick={handleUpgradeClick}>
             Upgrade Plan
           </Button>
         ]}

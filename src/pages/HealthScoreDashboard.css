@@ -1,0 +1,442 @@
+/* ═══════════════════════════════════════════════
+   Health Score Dashboard — Premium UI
+   ═══════════════════════════════════════════════ */
+
+.hsd-page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+}
+
+/* ─── Header Banner ─── */
+.hsd-header {
+  position: relative;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 40%, #40916c 100%);
+  border-radius: 24px;
+  padding: 36px 36px 32px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  color: #fff;
+}
+
+.hsd-header::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+}
+
+.hsd-header::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: 25%;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+}
+
+.hsd-header-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.hsd-header-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.hsd-header-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hsd-header h2.ant-typography {
+  color: #fff !important;
+  margin: 0 !important;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.hsd-header-subtitle {
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 14px;
+  margin-top: 4px;
+  display: block;
+}
+
+.hsd-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.hsd-plan-tag {
+  border-radius: 20px !important;
+  padding: 5px 16px !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px;
+  border: none !important;
+}
+
+/* ─── Score Cards Row ─── */
+.hsd-score-card {
+  border-radius: 24px !important;
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  text-align: center;
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.hsd-score-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+.hsd-score-card .ant-card-body {
+  padding: 32px 24px;
+}
+
+/* Health Score Card */
+.hsd-score-card-main {
+  position: relative;
+}
+
+.hsd-score-card-main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1b4332, #2d6a4f, #40916c, #52c41a);
+}
+
+.hsd-score-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #8c8c8c;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.hsd-score-card .ant-progress-text {
+  font-size: 32px !important;
+  font-weight: 800 !important;
+  color: #1b4332 !important;
+}
+
+.hsd-score-status {
+  margin-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.hsd-score-status-good {
+  background: linear-gradient(135deg, #e8f5ee, #d4edda);
+  color: #1b4332;
+}
+
+.hsd-score-status-warn {
+  background: linear-gradient(135deg, #fff7e6, #ffe7ba);
+  color: #d48806;
+}
+
+/* BMI Card */
+.hsd-bmi-value {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  margin: 16px 0;
+  display: block;
+}
+
+.hsd-bmi-category {
+  border-radius: 20px !important;
+  font-size: 15px !important;
+  padding: 5px 20px !important;
+  font-weight: 600;
+}
+
+.hsd-bmi-note {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-top: 16px;
+  display: block;
+}
+
+/* Insights Card */
+.hsd-insights-card {
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%) !important;
+  border: none !important;
+}
+
+.hsd-insights-card .ant-card-body {
+  padding: 28px 24px;
+}
+
+.hsd-insights-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(27, 67, 50, 0.35) !important;
+}
+
+.hsd-insights-title {
+  color: #fff !important;
+  margin: 0 0 20px !important;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hsd-insights-title-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hsd-insight-item {
+  border: none !important;
+  padding: 10px 0 !important;
+}
+
+.hsd-insight-text {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 13.5px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.hsd-insight-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #a7f3d0;
+}
+
+.hsd-insights-unlock-btn {
+  margin-top: 20px;
+  border-radius: 12px !important;
+  height: 42px !important;
+  font-weight: 600 !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #fff !important;
+}
+
+.hsd-insights-unlock-btn:hover {
+  border-color: #fff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ─── Root Cause Section ─── */
+.hsd-root-section {
+  margin-top: 8px;
+}
+
+.hsd-root-title {
+  margin-bottom: 20px !important;
+  color: #1b4332 !important;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hsd-root-title-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e8f5ee, #d4edda);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2d6a4f;
+}
+
+.hsd-root-card {
+  border-radius: 18px !important;
+  border: 1px solid #e8f5ee !important;
+  background: linear-gradient(135deg, #fafdfb 0%, #f5faf7 100%) !important;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.hsd-root-card:hover {
+  border-color: #b7eb8f !important;
+  box-shadow: 0 4px 20px rgba(45, 106, 79, 0.1) !important;
+  transform: translateY(-2px);
+}
+
+.hsd-root-card .ant-card-body {
+  padding: 24px;
+}
+
+.hsd-root-card .ant-statistic-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.hsd-root-card .ant-statistic-content-value {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+}
+
+.hsd-root-card-critical {
+  border-left: 4px solid #ff4d4f !important;
+}
+
+.hsd-root-card-normal {
+  border-left: 4px solid #2d6a4f !important;
+}
+
+/* ─── CTA Button ─── */
+.hsd-cta-section {
+  text-align: center;
+  margin-top: 40px;
+  padding: 36px 0;
+  background: linear-gradient(135deg, #f0f7f4 0%, #e8f5ee 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(45, 106, 79, 0.08);
+}
+
+.hsd-cta-text {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.hsd-cta-btn {
+  height: 56px !important;
+  padding: 0 44px !important;
+  border-radius: 16px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%) !important;
+  border: none !important;
+  box-shadow: 0 6px 24px rgba(27, 67, 50, 0.35) !important;
+  transition: all 0.3s ease !important;
+}
+
+.hsd-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(27, 67, 50, 0.45) !important;
+}
+
+/* ─── Empty State ─── */
+.hsd-empty-card {
+  border-radius: 24px !important;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.hsd-empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #e8f5ee, #d4edda);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.hsd-empty-btn {
+  border-radius: 14px !important;
+  height: 50px !important;
+  padding: 0 32px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, #1b4332, #2d6a4f) !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.3) !important;
+  margin-top: 16px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .hsd-page {
+    padding: 0 10px 32px;
+  }
+
+  .hsd-header {
+    padding: 28px 22px 24px;
+    border-radius: 18px;
+  }
+
+  .hsd-header h2.ant-typography {
+    font-size: 22px;
+  }
+
+  .hsd-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hsd-score-card .ant-card-body {
+    padding: 24px 18px;
+  }
+
+  .hsd-bmi-value {
+    font-size: 44px;
+  }
+
+  .hsd-cta-section {
+    padding: 28px 16px;
+  }
+
+  .hsd-cta-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hsd-header-left {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hsd-header-right {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -43,11 +43,13 @@ import {
   RotateCcw,
   Check,
   Ruler,
-  BarChart3
+  BarChart3,
+  Settings
 } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import './SettingsPage.css';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -82,7 +84,6 @@ const SettingsPage = () => {
   const handleSettingChange = (key, value) => {
     updateSetting(key, value);
 
-    // Show specific messages for certain settings
     if (key === 'theme') {
       const themeNames = { light: 'Light', dark: 'Dark', system: 'System' };
       message.success(`Theme changed to ${themeNames[value]}`);
@@ -98,10 +99,8 @@ const SettingsPage = () => {
 
   const handleSaveProfile = async (values) => {
     setLoading(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Update user profile in AuthContext
     if (updateProfile) {
       updateProfile({
         name: values.fullName,
@@ -117,7 +116,6 @@ const SettingsPage = () => {
 
   const handleDeleteAccount = () => {
     setDeleteModalVisible(false);
-    // Clear all user data
     logout();
     resetSettings();
     localStorage.clear();
@@ -137,8 +135,7 @@ const SettingsPage = () => {
     navigate('/');
   };
 
-  const handleChangePassword = async (values) => {
-    // Simulate password change
+  const handleChangePassword = async () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     setPasswordModalVisible(false);
     passwordForm.resetFields();
@@ -156,76 +153,43 @@ const SettingsPage = () => {
       message.warning('Please enter your feedback');
       return;
     }
-    // Simulate sending feedback
     setFeedbackModalVisible(false);
     setFeedbackText('');
     message.success('Thank you for your feedback!');
   };
 
-  const SettingItem = ({ icon, title, description, children, onClick, highlight }) => (
+  // ─── Reusable Components ───
+
+  const SettingItem = ({ icon, title, description, children, onClick, highlight, className = '' }) => (
     <div
       onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '16px 0',
-        borderBottom: '1px solid #f0f0f0',
-        cursor: onClick ? 'pointer' : 'default',
-        background: highlight ? 'rgba(45, 106, 79, 0.05)' : 'transparent',
-        margin: highlight ? '0 -28px' : 0,
-        padding: highlight ? '16px 28px' : '16px 0',
-        borderRadius: highlight ? 8 : 0
-      }}
+      className={`setting-item ${onClick ? 'setting-item-clickable' : ''} ${highlight ? 'setting-item-highlight' : ''} ${className}`}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1 }}>
-        <div className="setting-item-icon" style={{
-          width: 44,
-          height: 44,
-          borderRadius: 12,
-          background: '#e8f0ed',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+      <div className="setting-item-left">
+        <div className="setting-item-icon">
           {icon}
         </div>
-        <div style={{ flex: 1 }}>
-          <Text strong style={{ display: 'block', fontSize: 15, color: '#1b4332' }}>{title}</Text>
+        <div className="setting-item-text">
+          <span className="setting-item-title">{title}</span>
           {description && (
-            <Text type="secondary" style={{ fontSize: 13 }}>{description}</Text>
+            <span className="setting-item-desc">{description}</span>
           )}
         </div>
       </div>
-      <div style={{ marginLeft: 16 }}>
+      <div className="setting-item-right">
         {children || (onClick && <ChevronRight size={20} color="#999" />)}
       </div>
     </div>
   );
 
   const SectionCard = ({ title, icon, children, extra }) => (
-    <Card
-      style={{
-        borderRadius: 20,
-        marginBottom: 24,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
-      }}
-      styles={{ body: { padding: '24px 28px' } }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 40,
-            height: 40,
-            borderRadius: 10,
-            background: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
+    <Card className="settings-section-card">
+      <div className="settings-section-header">
+        <div className="settings-section-header-left">
+          <div className="settings-section-icon">
             {icon}
           </div>
-          <Title level={4} style={{ margin: 0, color: '#1b4332' }}>{title}</Title>
+          <Title level={4}>{title}</Title>
         </div>
         {extra}
       </div>
@@ -233,13 +197,14 @@ const SettingsPage = () => {
     </Card>
   );
 
-  // Current theme indicator
   const getCurrentThemeIcon = () => {
     if (settings.theme === 'dark' || (settings.theme === 'system' && isDarkMode)) {
       return <Moon size={20} color="#1b4332" />;
     }
     return <Sun size={20} color="#1b4332" />;
   };
+
+  // ─── Tab Items ───
 
   const tabItems = [
     {
@@ -250,117 +215,94 @@ const SettingsPage = () => {
         </span>
       ),
       children: (
-        <>
-          {/* Profile Section */}
-          <SectionCard title="Personal Information" icon={<User size={20} color="#fff" />}>
-            <div style={{ textAlign: 'center', marginBottom: 32 }}>
-              <div style={{ position: 'relative', display: 'inline-block' }}>
-                <Avatar
-                  size={120}
-                  style={{
-                    background: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%)',
-                    fontSize: 48
-                  }}
-                >
-                  {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
-                </Avatar>
-                <Button
-                  type="primary"
-                  shape="circle"
-                  icon={<Camera size={16} />}
-                  size="small"
-                  style={{
-                    position: 'absolute',
-                    bottom: 4,
-                    right: 4,
-                    background: '#fff',
-                    color: '#1b4332',
-                    border: '2px solid #1b4332'
-                  }}
-                />
-              </div>
-              <Text type="secondary" style={{ display: 'block', marginTop: 12 }}>
-                Click to change profile photo
-              </Text>
-            </div>
-
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={handleSaveProfile}
-            >
-              <Row gutter={24}>
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name="fullName"
-                    label="Full Name"
-                    rules={[{ required: true, message: 'Please enter your name' }]}
-                  >
-                    <Input
-                      prefix={<User size={16} color="#999" />}
-                      size="large"
-                      placeholder="Enter your full name"
-                      style={{ borderRadius: 10 }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name="email"
-                    label="Email Address"
-                    rules={[{ required: true, type: 'email', message: 'Please enter valid email' }]}
-                  >
-                    <Input
-                      prefix={<Mail size={16} color="#999" />}
-                      size="large"
-                      placeholder="Enter your email"
-                      style={{ borderRadius: 10 }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item name="phone" label="Phone Number">
-                    <Input
-                      prefix={<Smartphone size={16} color="#999" />}
-                      size="large"
-                      placeholder="Enter phone number"
-                      style={{ borderRadius: 10 }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item name="gender" label="Gender">
-                    <Select
-                      size="large"
-                      style={{ borderRadius: 10 }}
-                      options={[
-                        { value: 'male', label: 'Male' },
-                        { value: 'female', label: 'Female' },
-                        { value: 'other', label: 'Other' },
-                        { value: 'prefer_not', label: 'Prefer not to say' }
-                      ]}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                icon={<Save size={18} />}
-                size="large"
+        <SectionCard title="Personal Information" icon={<User size={20} color="#fff" />}>
+          <div className="settings-profile-avatar-wrap">
+            <div className="settings-profile-avatar-container">
+              <Avatar
+                size={120}
                 style={{
-                  borderRadius: 12,
-                  height: 48,
-                  padding: '0 32px',
-                  background: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%)'
+                  background: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%)',
+                  fontSize: 48
                 }}
               >
-                Save Changes
-              </Button>
-            </Form>
-          </SectionCard>
-        </>
+                {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
+              </Avatar>
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<Camera size={16} />}
+                size="small"
+                className="settings-profile-camera-btn"
+              />
+            </div>
+            <Text className="settings-profile-hint">
+              Click to change profile photo
+            </Text>
+          </div>
+
+          <Form form={form} layout="vertical" onFinish={handleSaveProfile}>
+            <Row gutter={24}>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  name="fullName"
+                  label="Full Name"
+                  rules={[{ required: true, message: 'Please enter your name' }]}
+                >
+                  <Input
+                    prefix={<User size={16} color="#999" />}
+                    size="large"
+                    placeholder="Enter your full name"
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item
+                  name="email"
+                  label="Email Address"
+                  rules={[{ required: true, type: 'email', message: 'Please enter valid email' }]}
+                >
+                  <Input
+                    prefix={<Mail size={16} color="#999" />}
+                    size="large"
+                    placeholder="Enter your email"
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item name="phone" label="Phone Number">
+                  <Input
+                    prefix={<Smartphone size={16} color="#999" />}
+                    size="large"
+                    placeholder="Enter phone number"
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={12}>
+                <Form.Item name="gender" label="Gender">
+                  <Select
+                    size="large"
+                    options={[
+                      { value: 'male', label: 'Male' },
+                      { value: 'female', label: 'Female' },
+                      { value: 'other', label: 'Other' },
+                      { value: 'prefer_not', label: 'Prefer not to say' }
+                    ]}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              icon={<Save size={18} />}
+              size="large"
+              className="settings-save-btn"
+            >
+              Save Changes
+            </Button>
+          </Form>
+        </SectionCard>
       )
     },
     {
@@ -513,7 +455,6 @@ const SettingsPage = () => {
       ),
       children: (
         <>
-          {/* Current Settings Alert */}
           <Alert
             message="Your preferences are saved automatically"
             description={
@@ -535,7 +476,7 @@ const SettingsPage = () => {
             }
             type="success"
             showIcon
-            style={{ marginBottom: 24, borderRadius: 12 }}
+            className="settings-prefs-alert"
           />
 
           <SectionCard
@@ -556,7 +497,7 @@ const SettingsPage = () => {
               icon={getCurrentThemeIcon()}
               title="Theme"
               description={`Currently: ${isDarkMode ? 'Dark mode active' : 'Light mode active'}`}
-              highlight={true}
+              highlight
             >
               <Select
                 value={settings.theme}
@@ -574,7 +515,7 @@ const SettingsPage = () => {
               icon={<Globe size={20} color="#1b4332" />}
               title="Language"
               description={`Display language: ${languageLabels[settings.language]}`}
-              highlight={true}
+              highlight
             >
               <Select
                 value={settings.language}
@@ -593,7 +534,7 @@ const SettingsPage = () => {
               icon={<Ruler size={20} color="#1b4332" />}
               title="Measurement Units"
               description={settings.measurementUnit === 'metric' ? 'Using kilograms and centimeters' : 'Using pounds and feet/inches'}
-              highlight={true}
+              highlight
             >
               <Select
                 value={settings.measurementUnit}
@@ -689,21 +630,22 @@ const SettingsPage = () => {
               title="Sign Out"
               description="Log out of your account"
               onClick={handleSignOut}
+              className="setting-item-signout"
             />
           )}
 
           {isAuthenticated && (
-            <div style={{ marginTop: 24 }}>
+            <div className="settings-danger-zone">
               <Button
                 danger
                 icon={<Trash2 size={18} />}
                 size="large"
                 onClick={() => setDeleteModalVisible(true)}
-                style={{ borderRadius: 12, height: 48 }}
+                className="settings-delete-btn"
               >
                 Delete Account
               </Button>
-              <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 13 }}>
+              <Text className="settings-danger-zone-text">
                 This action cannot be undone. All your data will be permanently deleted.
               </Text>
             </div>
@@ -714,30 +656,30 @@ const SettingsPage = () => {
   ];
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px' }}>
-      {/* Page Header */}
-      <div style={{ marginBottom: 32 }}>
-        <Title level={2} style={{ color: '#1b4332', marginBottom: 8 }}>Settings</Title>
-        <Text type="secondary" style={{ fontSize: 16 }}>
-          Manage your account settings and preferences
-        </Text>
+    <div className="settings-page">
+      {/* ─── Gradient Header Banner ─── */}
+      <div className="settings-header">
+        <div className="settings-header-content">
+          <div className="settings-header-icon">
+            <Settings size={32} color="#fff" />
+          </div>
+          <div>
+            <Title level={2}>Settings</Title>
+            <Text className="settings-header-subtitle">
+              Manage your account, preferences, and privacy
+            </Text>
+          </div>
+        </div>
       </div>
 
-      {/* Settings Tabs */}
+      {/* ─── Settings Tabs ─── */}
       <Tabs
         items={tabItems}
         tabPosition="left"
-        style={{ minHeight: 600 }}
-        tabBarStyle={{
-          width: 180,
-          background: '#fff',
-          borderRadius: 16,
-          padding: '16px 8px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
-        }}
+        className="settings-tabs"
       />
 
-      {/* Delete Account Modal */}
+      {/* ─── Delete Account Modal ─── */}
       <Modal
         title={
           <Space>
@@ -747,6 +689,7 @@ const SettingsPage = () => {
         }
         open={deleteModalVisible}
         onCancel={() => setDeleteModalVisible(false)}
+        className="settings-modal"
         footer={[
           <Button key="cancel" onClick={() => setDeleteModalVisible(false)}>
             Cancel
@@ -764,7 +707,7 @@ const SettingsPage = () => {
         </Paragraph>
       </Modal>
 
-      {/* Reset Settings Modal */}
+      {/* ─── Reset Settings Modal ─── */}
       <Modal
         title={
           <Space>
@@ -774,6 +717,7 @@ const SettingsPage = () => {
         }
         open={resetModalVisible}
         onCancel={() => setResetModalVisible(false)}
+        className="settings-modal"
         footer={[
           <Button key="cancel" onClick={() => setResetModalVisible(false)}>
             Cancel
@@ -791,7 +735,7 @@ const SettingsPage = () => {
         </Paragraph>
       </Modal>
 
-      {/* Change Password Modal */}
+      {/* ─── Change Password Modal ─── */}
       <Modal
         title={
           <Space>
@@ -805,6 +749,7 @@ const SettingsPage = () => {
           passwordForm.resetFields();
         }}
         footer={null}
+        className="settings-modal"
       >
         <Form
           form={passwordForm}
@@ -820,7 +765,6 @@ const SettingsPage = () => {
             <Input.Password
               prefix={<Lock size={16} color="#999" />}
               placeholder="Enter current password"
-              style={{ borderRadius: 8 }}
             />
           </Form.Item>
           <Form.Item
@@ -834,7 +778,6 @@ const SettingsPage = () => {
             <Input.Password
               prefix={<Lock size={16} color="#999" />}
               placeholder="Enter new password"
-              style={{ borderRadius: 8 }}
             />
           </Form.Item>
           <Form.Item
@@ -856,7 +799,6 @@ const SettingsPage = () => {
             <Input.Password
               prefix={<Lock size={16} color="#999" />}
               placeholder="Confirm new password"
-              style={{ borderRadius: 8 }}
             />
           </Form.Item>
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
@@ -875,7 +817,7 @@ const SettingsPage = () => {
         </Form>
       </Modal>
 
-      {/* Two-Factor Authentication Modal */}
+      {/* ─── Two-Factor Authentication Modal ─── */}
       <Modal
         title={
           <Space>
@@ -885,6 +827,7 @@ const SettingsPage = () => {
         }
         open={twoFactorModalVisible}
         onCancel={() => setTwoFactorModalVisible(false)}
+        className="settings-modal"
         footer={[
           <Button key="cancel" onClick={() => setTwoFactorModalVisible(false)}>
             Cancel
@@ -930,7 +873,7 @@ const SettingsPage = () => {
         )}
       </Modal>
 
-      {/* Feedback Modal */}
+      {/* ─── Feedback Modal ─── */}
       <Modal
         title={
           <Space>
@@ -943,6 +886,7 @@ const SettingsPage = () => {
           setFeedbackModalVisible(false);
           setFeedbackText('');
         }}
+        className="settings-modal"
         footer={[
           <Button key="cancel" onClick={() => {
             setFeedbackModalVisible(false);
@@ -963,54 +907,12 @@ const SettingsPage = () => {
           placeholder="Tell us what you think about StayFit..."
           value={feedbackText}
           onChange={(e) => setFeedbackText(e.target.value)}
-          style={{ borderRadius: 8, marginTop: 8 }}
+          style={{ borderRadius: 12, marginTop: 8 }}
         />
         <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 12 }}>
           Your feedback is anonymous unless you include your contact information.
         </Text>
       </Modal>
-
-      <style>{`
-        .ant-tabs-tab {
-          padding: 12px 16px !important;
-          margin: 4px 0 !important;
-          border-radius: 10px !important;
-          justify-content: flex-start !important;
-        }
-        .ant-tabs-tab-active {
-          background: #e8f0ed !important;
-        }
-        .ant-tabs-tab-active .ant-tabs-tab-btn {
-          color: #1b4332 !important;
-          font-weight: 600 !important;
-        }
-        .ant-tabs-ink-bar {
-          display: none !important;
-        }
-        .ant-tabs-content-holder {
-          padding-left: 24px;
-        }
-        @media (max-width: 768px) {
-          .ant-tabs {
-            flex-direction: column !important;
-          }
-          .ant-tabs-nav {
-            width: 100% !important;
-            margin-bottom: 24px;
-          }
-          .ant-tabs-nav-list {
-            flex-direction: row !important;
-            overflow-x: auto;
-            flex-wrap: nowrap;
-          }
-          .ant-tabs-tab {
-            flex-shrink: 0;
-          }
-          .ant-tabs-content-holder {
-            padding-left: 0 !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

@@ -14,10 +14,12 @@ import {
   User,
   LogOut,
   Dumbbell,
-  ShieldCheck
+  ShieldCheck,
+  Crown
 } from 'lucide-react';
 import AdvancedSearchBar from './AdvancedSearchBar';
 import MobileFilterDrawer from './MobileFilterDrawer';
+import ChatBot from './ChatBot';
 import { useAuth } from '../context/AuthContext';
 import { useTrainerAuth } from '../context/TrainerAuthContext';
 
@@ -29,7 +31,11 @@ const AppLayout = ({ children }) => {
   const navigate = useNavigate();
   const [visible, setVisible] = React.useState(false);
   const { user, isAuthenticated, logout } = useAuth();
-  const { adminLoggedIn } = useTrainerAuth();
+  const { currentTrainer, adminLoggedIn, adminLogout, trainerLogout } = useTrainerAuth();
+
+  const trainerMenuItem = currentTrainer
+    ? { key: '/trainer-dashboard', icon: <Dumbbell size={22} />, label: <Link to="/trainer-dashboard">Trainer Panel</Link> }
+    : { key: '/trainer-login', icon: <Dumbbell size={22} />, label: <Link to="/trainer-login">Join as Trainer</Link> };
 
   const menuItems = [
     { key: '/', icon: <Home size={22} />, label: <Link to="/">Home</Link> },
@@ -37,9 +43,10 @@ const AppLayout = ({ children }) => {
     { key: '/score-dashboard', icon: <LayoutDashboard size={22} />, label: <Link to="/score-dashboard">Health Score</Link> },
     { key: '/health-plan', icon: <Map size={22} />, label: <Link to="/health-plan">My Plan</Link> },
     { key: '/tracker', icon: <LineChart size={22} />, label: <Link to="/tracker">Progress</Link> },
-    { key: '/chat', icon: <MessageSquare size={22} />, label: <Link to="/chat">Health AI</Link> },
+    { key: '/chat', icon: <MessageSquare size={22} />, label: <Link to="/chat">FitAI Coach</Link> },
+    { key: '/pricing', icon: <Crown size={22} />, label: <Link to="/pricing">Upgrade Plans</Link> },
     { type: 'divider' },
-    { key: '/trainer-login', icon: <Dumbbell size={22} />, label: <Link to="/trainer-login">Join as Trainer</Link> },
+    trainerMenuItem,
     ...(adminLoggedIn ? [{ key: '/admin', icon: <ShieldCheck size={22} />, label: <Link to="/admin">Admin Panel</Link> }] : []),
     { type: 'divider' },
     { key: '/settings', icon: <Settings size={22} />, label: <Link to="/settings">Settings</Link> },
@@ -61,7 +68,8 @@ const AppLayout = ({ children }) => {
         }}
         trigger={null}
       >
-        <div style={{ height: 80, margin: '20px 0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ height: 80, margin: '20px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+          <img src="/logo.svg" alt="StayFit" style={{ width: 40, height: 40 }} />
           <Title level={2} style={{ color: '#2d6a4f', margin: 0, fontFamily: 'serif', fontSize: '28px' }}>StayFit</Title>
         </div>
         <Menu
@@ -95,6 +103,7 @@ const AppLayout = ({ children }) => {
               className="mobile-toggle"
               style={{ display: 'none' }}
             />
+            <img src="/logo.svg" alt="StayFit" style={{ width: 34, height: 34 }} className="header-logo" />
             <Title level={3} style={{ margin: 0, color: '#2d6a4f', fontSize: '24px' }} className="header-title">StayFit</Title>
           </div>
 
@@ -109,52 +118,119 @@ const AppLayout = ({ children }) => {
                 ⚠️ NOT FOR MEDICAL DIAGNOSIS
               </Text>
             </div>
-            {isAuthenticated ? (
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: 'settings',
-                      icon: <Settings size={16} />,
-                      label: 'Settings',
-                      onClick: () => navigate('/settings')
-                    },
-                    { type: 'divider' },
-                    {
-                      key: 'logout',
-                      icon: <LogOut size={16} />,
-                      label: 'Logout',
-                      onClick: () => {
-                        logout();
-                        navigate('/');
-                      }
-                    }
-                  ]
-                }}
-                placement="bottomRight"
-                trigger={['click']}
-              >
-                <Button
-                  type="primary"
-                  style={{
-                    borderRadius: '10px',
-                    fontSize: '15px',
-                    height: '42px',
-                    padding: '0 20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
+            {(isAuthenticated || adminLoggedIn || currentTrainer) ? (() => {
+              const dropdownItems = [];
+              // Active role labels
+              const roles = [];
+              if (isAuthenticated) roles.push('User');
+              if (currentTrainer) roles.push('Trainer');
+              if (adminLoggedIn) roles.push('Admin');
+              dropdownItems.push({
+                key: 'role-info',
+                label: <Text type="secondary" style={{ fontSize: 11 }}>Logged in as: {roles.join(' + ')}</Text>,
+                disabled: true
+              });
+              dropdownItems.push({ type: 'divider' });
+
+              // User options
+              if (isAuthenticated) {
+                dropdownItems.push({
+                  key: 'settings',
+                  icon: <Settings size={16} />,
+                  label: 'Settings',
+                  onClick: () => navigate('/settings')
+                });
+              }
+              // Trainer options
+              if (currentTrainer) {
+                dropdownItems.push({
+                  key: 'trainer-dashboard',
+                  icon: <Dumbbell size={16} />,
+                  label: 'Trainer Panel',
+                  onClick: () => navigate('/trainer-dashboard')
+                });
+              }
+              // Admin options
+              if (adminLoggedIn) {
+                dropdownItems.push({
+                  key: 'admin-panel',
+                  icon: <ShieldCheck size={16} />,
+                  label: 'Admin Panel',
+                  onClick: () => navigate('/admin')
+                });
+              }
+
+              dropdownItems.push({ type: 'divider' });
+
+              // Logout options
+              if (isAuthenticated) {
+                dropdownItems.push({
+                  key: 'logout-user',
+                  icon: <LogOut size={16} />,
+                  label: 'Logout User',
+                  danger: true,
+                  onClick: () => { logout(); navigate('/'); }
+                });
+              }
+              if (currentTrainer) {
+                dropdownItems.push({
+                  key: 'logout-trainer',
+                  icon: <LogOut size={16} />,
+                  label: 'Logout Trainer',
+                  danger: true,
+                  onClick: () => { trainerLogout(); navigate('/'); }
+                });
+              }
+              if (adminLoggedIn) {
+                dropdownItems.push({
+                  key: 'logout-admin',
+                  icon: <LogOut size={16} />,
+                  label: 'Logout Admin',
+                  danger: true,
+                  onClick: () => { adminLogout(); navigate('/'); }
+                });
+              }
+
+              // Determine display name & avatar style
+              const displayName = isAuthenticated ? (user?.name || 'Account')
+                : currentTrainer ? currentTrainer.name
+                : 'Admin';
+              const avatarBg = adminLoggedIn && !isAuthenticated && !currentTrainer ? '#fff0f0' : '#fff';
+              const avatarColor = adminLoggedIn && !isAuthenticated && !currentTrainer ? '#cf1322' : '#2d6a4f';
+              const avatarIcon = adminLoggedIn && !isAuthenticated && !currentTrainer
+                ? <ShieldCheck size={16} />
+                : currentTrainer && !isAuthenticated
+                  ? <Dumbbell size={16} />
+                  : <User size={16} />;
+
+              return (
+                <Dropdown
+                  menu={{ items: dropdownItems }}
+                  placement="bottomRight"
+                  trigger={['click']}
                 >
-                  <Avatar
-                    size={28}
-                    style={{ backgroundColor: '#fff', color: '#2d6a4f' }}
-                    icon={<User size={16} />}
-                  />
-                  <span className="account-name">{user?.name || 'Account'}</span>
-                </Button>
-              </Dropdown>
-            ) : (
+                  <Button
+                    type="primary"
+                    style={{
+                      borderRadius: '10px',
+                      fontSize: '15px',
+                      height: '42px',
+                      padding: '0 20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <Avatar
+                      size={28}
+                      style={{ backgroundColor: avatarBg, color: avatarColor }}
+                      icon={avatarIcon}
+                    />
+                    <span className="account-name">{displayName}</span>
+                  </Button>
+                </Dropdown>
+              );
+            })() : (
               <>
                 <Link to="/login">
                   <Button type="text" icon={<LogIn size={20} />} className="login-btn" style={{ fontSize: '15px', height: '42px' }}>
@@ -196,6 +272,7 @@ const AppLayout = ({ children }) => {
       </Drawer>
 
       <MobileFilterDrawer />
+      <ChatBot />
 
       <style>{`
         .site-layout { margin-left: 280px; }
@@ -226,6 +303,7 @@ const AppLayout = ({ children }) => {
           .login-btn span { display: none; }
           .signup-btn { padding: 0 16px !important; }
           .account-name { display: none; }
+          .admin-label { display: none; }
         }
       `}</style>
     </Layout>

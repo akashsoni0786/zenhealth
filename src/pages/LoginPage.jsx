@@ -19,38 +19,54 @@ const LoginPage = () => {
   const [googleModalVisible, setGoogleModalVisible] = useState(false);
   const { login } = useAuth();
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     setLoading(true);
-    // Simulate login - in real app, this would call an API
-    setTimeout(() => {
+    try {
+      const result = await login({ email: values.email, password: values.password });
+      if (result.error) {
+        message.error(result.error);
+      } else {
+        if (result.offline) {
+          message.success('Login successful (offline mode)');
+        } else {
+          message.success('Login successful! Welcome back.');
+        }
+        navigate('/');
+      }
+    } catch {
+      message.error('Something went wrong. Please try again.');
+    } finally {
       setLoading(false);
-      login({ email: values.email });
-      message.success('Login successful! Welcome back.');
-      navigate('/');
-    }, 1000);
+    }
   };
 
   const handleGoogleLogin = () => {
     setGoogleModalVisible(true);
   };
 
-  const selectGoogleAccount = (account) => {
+  const selectGoogleAccount = async (account) => {
     setGoogleModalVisible(false);
     setGoogleLoading(true);
 
-    // Simulate Google OAuth flow
-    setTimeout(() => {
-      setGoogleLoading(false);
-      login({
+    try {
+      const result = await login({
         id: account.id,
         email: account.email,
         name: account.name,
         avatar: account.avatar,
         provider: 'google'
       });
-      message.success(`Welcome back, ${account.name}!`);
-      navigate('/');
-    }, 1500);
+      if (result.error) {
+        message.error(result.error);
+      } else {
+        message.success(`Welcome back, ${account.name}!`);
+        navigate('/');
+      }
+    } catch {
+      message.error('Google login failed. Please try again.');
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   return (

@@ -40,7 +40,11 @@ import {
   IndianRupee,
   Home
 } from 'lucide-react';
-import { TRAINER_DATA, getCategoryColor, getCategoryLabel } from '../data/trainerData';
+import { getCategoryColor, getCategoryLabel } from '../data/trainerData';
+import { useSearch } from '../context/SearchContext';
+import { useAuth } from '../context/AuthContext';
+import { bookingAPI } from '../utils/api';
+import { Lock, LogIn as LogInIcon } from 'lucide-react';
 import './BookConsultationPage.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -67,11 +71,15 @@ const BookConsultationPage = () => {
   const [isBookingComplete, setIsBookingComplete] = useState(false);
   const [form] = Form.useForm();
 
-  // Get trainer data
+  // Auth check
+  const { isAuthenticated } = useAuth();
+
+  // Get trainer data from merged list (static + registered)
+  const { allTrainers } = useSearch();
   const trainer = useMemo(() => {
-    const id = parseInt(trainerId);
-    return TRAINER_DATA.find(t => t.id === id);
-  }, [trainerId]);
+    const numId = parseInt(trainerId);
+    return allTrainers.find(t => t.id === numId || t.id === trainerId || t.id === `reg_${trainerId}`);
+  }, [trainerId, allTrainers]);
 
   if (!trainer) {
     return (
@@ -86,6 +94,59 @@ const BookConsultationPage = () => {
             </Button>
           }
         />
+      </div>
+    );
+  }
+
+  // ─── Login Gate ───
+  if (!isAuthenticated) {
+    return (
+      <div className="booking-page" style={{ maxWidth: 600, margin: '0 auto', padding: '40px 16px' }}>
+        <Button type="text" icon={<ArrowLeft size={20} />} onClick={() => navigate(-1)}
+          style={{ marginBottom: 20, color: '#1b4332' }}>Back</Button>
+        <Card style={{ borderRadius: 20, textAlign: 'center', padding: '40px 24px' }}>
+          <div style={{
+            width: 72, height: 72, borderRadius: 20,
+            background: 'linear-gradient(135deg, #fff3e0, #ffe0b2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 24px'
+          }}>
+            <Lock size={34} color="#e65100" />
+          </div>
+          <Title level={3} style={{ color: '#1b4332', margin: '0 0 8px' }}>Login Required</Title>
+          <Paragraph style={{ color: '#666', fontSize: 15, maxWidth: 400, margin: '0 auto 12px' }}>
+            Please login or sign up to book a consultation with <strong>{trainer.name}</strong>.
+          </Paragraph>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center', marginBottom: 28 }}>
+            <Avatar size={44} src={trainer.image} />
+            <div style={{ textAlign: 'left' }}>
+              <Text strong style={{ display: 'block', fontSize: 15 }}>{trainer.name}</Text>
+              <Tag color={getCategoryColor(trainer.category)}>{getCategoryLabel(trainer.category)}</Tag>
+            </div>
+          </div>
+          <Space size="middle">
+            <Button type="primary" size="large" icon={<LogInIcon size={16} />}
+              onClick={() => navigate('/login', { state: { from: `/book/${trainerId}` } })}
+              style={{
+                height: 48, borderRadius: 12, fontWeight: 600, fontSize: 15,
+                background: 'linear-gradient(135deg, #2d6a4f, #40916c)', border: 'none',
+                padding: '0 32px'
+              }}>
+              Login
+            </Button>
+            <Button size="large"
+              onClick={() => navigate('/signup', { state: { from: `/book/${trainerId}` } })}
+              style={{ height: 48, borderRadius: 12, fontWeight: 600, fontSize: 15, padding: '0 32px' }}>
+              Sign Up
+            </Button>
+          </Space>
+          <div style={{ marginTop: 16 }}>
+            <Button type="link" onClick={() => navigate(`/trainer/${trainerId}`)}
+              style={{ color: '#888', fontSize: 13 }}>
+              View Trainer Profile Instead
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -133,8 +194,44 @@ const BookConsultationPage = () => {
     setCurrentStep(currentStep - 1);
   };
 
-  // Handle booking submission - Navigate to payment page
+  // Handle booking submission - Save booking to backend and navigate to payment
   const handleSubmitBooking = () => {
+    // Try to create booking in backend (non-blocking)
+    const timeSlotStr = bookingData.timeSlot?.format?.('HH:mm') || bookingData.timeSlot;
+    bookingAPI.create({
+      trainerId: trainer.id,
+      consultationType: bookingData.consultationType,
+      date: bookingData.date?.toISOString?.() || bookingData.date?.format?.('YYYY-MM-DD'),
+      timeSlot: {
+        start: timeSlotStr || '10:00',
+        end: timeSlotStr ? `${String(parseInt(timeSlotStr.split(':')[0]) + 1).padStart(2, '0')}:00` : '11:00'
+      },
+      duration: bookingData.duration,
+      amount: totalPrice,
+      userNotes: bookingData.concerns || ''
+    }).catch(() => {});
+
+    // Save booking to localStorage so My Plan page can display it
+    const newBooking = {
+      id: `booking_${Date.now()}`,
+      trainerId: trainer.id,
+      trainerName: trainer.name,
+      trainerImage: trainer.image,
+      trainerCategory: trainer.category || '',
+      trainerSpec: trainer.specialization || '',
+      consultationType: bookingData.consultationType || 'video',
+      date: bookingData.date?.format?.('YYYY-MM-DD') || bookingData.date?.toISOString?.()?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+      timeSlot: { start: timeSlotStr || '10:00' },
+      duration: bookingData.duration || 30,
+      status: 'pending',
+      amount: totalPrice
+    };
+    try {
+      const existing = JSON.parse(localStorage.getItem('stayfit_user_bookings') || '[]');
+      existing.unshift(newBooking);
+      localStorage.setItem('stayfit_user_bookings', JSON.stringify(existing));
+    } catch {}
+
     navigate('/payment', {
       state: {
         bookingData: {

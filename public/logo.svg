@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d6a4f"/>
+      <stop offset="100%" stop-color="#40916c"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#95d5b2"/>
+      <stop offset="100%" stop-color="#52b788"/>
+    </linearGradient>
+    <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#d8f3dc"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect x="10" y="10" width="180" height="180" rx="44" fill="url(#bgGrad)"/>
+  <!-- Subtle inner glow -->
+  <rect x="10" y="10" width="180" height="180" rx="44" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+  <!-- Heart shape (health) -->
+  <path d="M100 148 C100 148, 52 112, 52 82 C52 64, 66 52, 82 52 C92 52, 98 58, 100 62 C102 58, 108 52, 118 52 C134 52, 148 64, 148 82 C148 112, 100 148, 100 148Z" fill="url(#heartGrad)" opacity="0.95"/>
+  <!-- Heartbeat/pulse line across the heart -->
+  <polyline points="62,90 82,90 88,72 96,108 104,78 110,98 118,90 138,90" fill="none" stroke="#2d6a4f" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Leaf accent (wellness/nature) -->
+  <path d="M140 42 C140 42, 162 34, 168 52 C174 70, 156 76, 148 68 C148 68, 158 58, 140 42Z" fill="url(#leafGrad)" opacity="0.9"/>
+  <line x1="152" y1="54" x2="146" y2="66" stroke="#2d6a4f" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+</svg>

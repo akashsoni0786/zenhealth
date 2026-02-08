@@ -12,20 +12,22 @@ import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 
 import TrainerCard from './TrainerCard';
-import { TRAINER_DATA, CATEGORY_OPTIONS } from '../data/trainerData';
+import { CATEGORY_OPTIONS } from '../data/trainerData';
+import { useSearch } from '../context/SearchContext';
 import './TopTrainersSlider.css';
 
 const { Title, Paragraph } = Typography;
 
 const TopTrainersSlider = () => {
   const navigate = useNavigate();
+  const { allTrainers } = useSearch();
   const [activeFilter, setActiveFilter] = useState('all');
   const [swiperRef, setSwiperRef] = useState(null);
 
   // Filter trainers based on category
   const filteredTrainers = activeFilter === 'all'
-    ? TRAINER_DATA
-    : TRAINER_DATA.filter(trainer => trainer.category === activeFilter);
+    ? allTrainers
+    : allTrainers.filter(trainer => trainer.category === activeFilter);
 
   // Sort to show top-rated first
   const sortedTrainers = [...filteredTrainers].sort((a, b) => {
@@ -153,7 +155,7 @@ const TopTrainersSlider = () => {
 
       {/* View All Link */}
       <div className="view-all-container">
-        <Button type="link" size="large" style={{ color: '#1b4332', fontWeight: 600 }}>
+        <Button type="link" size="large" onClick={() => navigate('/experts/all')} style={{ color: '#1b4332', fontWeight: 600 }}>
           View All Trainers →
         </Button>
       </div>

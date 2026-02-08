@@ -34,9 +34,21 @@ import {
   ShieldCheck,
   BarChart3,
   Wallet,
-  CalendarDays
+  CalendarDays,
+  UserCheck,
+  Activity
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  AreaChart, Area,
+  BarChart, Bar,
+  LineChart, Line,
+  PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid,
+  Tooltip as RechartsTooltip, Legend
+} from 'recharts';
 import { useTrainerAuth } from '../context/TrainerAuthContext';
+import { bookingAPI, trainerAPI } from '../utils/api';
 import './TrainerDashboardPage.css';
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -47,6 +59,40 @@ const defaultAvailability = DAYS_OF_WEEK.map((day, i) => ({
   start: '09:00 AM',
   end: '06:00 PM'
 }));
+
+// ─── Mock Customers Data ───
+const MOCK_CUSTOMERS = [
+  { id: 'c1', name: 'Rahul Sharma',   email: 'rahul.sharma@gmail.com',   phone: '+91 98765 43210', plan: 'Premium',  status: 'active',   joinDate: '2025-10-01', lastVisit: '2026-02-03', totalSessions: 4 },
+  { id: 'c2', name: 'Priya Patel',    email: 'priya.patel@gmail.com',    phone: '+91 87654 32109', plan: 'Basic',    status: 'active',   joinDate: '2025-10-10', lastVisit: '2025-11-22', totalSessions: 2 },
+  { id: 'c3', name: 'Amit Kumar',     email: 'amit.kumar@yahoo.com',     phone: '+91 76543 21098', plan: 'Premium',  status: 'active',   joinDate: '2025-10-18', lastVisit: '2026-01-05', totalSessions: 2 },
+  { id: 'c4', name: 'Sneha Reddy',    email: 'sneha.r@outlook.com',      phone: '+91 65432 10987', plan: 'Standard', status: 'active',   joinDate: '2025-11-05', lastVisit: '2026-02-10', totalSessions: 2 },
+  { id: 'c5', name: 'Vikram Singh',   email: 'vikram.singh@gmail.com',   phone: '+91 54321 09876', plan: 'Premium',  status: 'active',   joinDate: '2025-11-12', lastVisit: '2026-01-20', totalSessions: 2 },
+  { id: 'c6', name: 'Neha Gupta',     email: 'neha.gupta@gmail.com',     phone: '+91 43210 98765', plan: 'Basic',    status: 'inactive', joinDate: '2025-11-28', lastVisit: '2025-12-01', totalSessions: 1 },
+  { id: 'c7', name: 'Arjun Mehta',    email: 'arjun.m@hotmail.com',      phone: '+91 32109 87654', plan: 'Standard', status: 'inactive', joinDate: '2025-12-15', lastVisit: '2025-12-18', totalSessions: 1 },
+  { id: 'c8', name: 'Kavita Joshi',   email: 'kavita.j@gmail.com',       phone: '+91 21098 76543', plan: 'Basic',    status: 'active',   joinDate: '2026-01-08', lastVisit: '2026-01-12', totalSessions: 1 },
+  { id: 'c9', name: 'Deepak Nair',    email: 'deepak.nair@gmail.com',    phone: '+91 10987 65432', plan: 'Standard', status: 'active',   joinDate: '2026-02-01', lastVisit: '2026-02-14', totalSessions: 1 },
+];
+
+const PIE_COLORS = ['#2d6a4f', '#1890ff', '#faad14'];
+
+const getDefaultBookings = (price) => [
+  { id: 1,  clientId: 'c1', client: 'Rahul Sharma',  type: 'video',      date: '2025-10-05', time: '10:00 AM', status: 'completed', amount: price },
+  { id: 2,  clientId: 'c2', client: 'Priya Patel',   type: 'in-person',  date: '2025-10-12', time: '2:00 PM',  status: 'completed', amount: price },
+  { id: 3,  clientId: 'c3', client: 'Amit Kumar',    type: 'video',      date: '2025-10-20', time: '11:00 AM', status: 'completed', amount: price },
+  { id: 4,  clientId: 'c1', client: 'Rahul Sharma',  type: 'in-person',  date: '2025-11-03', time: '9:00 AM',  status: 'completed', amount: price },
+  { id: 5,  clientId: 'c4', client: 'Sneha Reddy',   type: 'home-visit', date: '2025-11-08', time: '4:00 PM',  status: 'completed', amount: price + 500 },
+  { id: 6,  clientId: 'c5', client: 'Vikram Singh',  type: 'video',      date: '2025-11-15', time: '7:00 AM',  status: 'completed', amount: price },
+  { id: 7,  clientId: 'c2', client: 'Priya Patel',   type: 'video',      date: '2025-11-22', time: '10:00 AM', status: 'completed', amount: price },
+  { id: 8,  clientId: 'c6', client: 'Neha Gupta',    type: 'in-person',  date: '2025-12-01', time: '3:00 PM',  status: 'completed', amount: price },
+  { id: 9,  clientId: 'c1', client: 'Rahul Sharma',  type: 'video',      date: '2025-12-10', time: '10:00 AM', status: 'completed', amount: price },
+  { id: 10, clientId: 'c7', client: 'Arjun Mehta',   type: 'home-visit', date: '2025-12-18', time: '5:00 PM',  status: 'completed', amount: price + 500 },
+  { id: 11, clientId: 'c3', client: 'Amit Kumar',    type: 'in-person',  date: '2026-01-05', time: '11:00 AM', status: 'completed', amount: price },
+  { id: 12, clientId: 'c8', client: 'Kavita Joshi',  type: 'video',      date: '2026-01-12', time: '8:00 AM',  status: 'completed', amount: price },
+  { id: 13, clientId: 'c5', client: 'Vikram Singh',  type: 'in-person',  date: '2026-01-20', time: '6:00 PM',  status: 'completed', amount: price },
+  { id: 14, clientId: 'c1', client: 'Rahul Sharma',  type: 'video',      date: '2026-02-03', time: '10:00 AM', status: 'upcoming',  amount: price },
+  { id: 15, clientId: 'c4', client: 'Sneha Reddy',   type: 'in-person',  date: '2026-02-10', time: '2:00 PM',  status: 'upcoming',  amount: price },
+  { id: 16, clientId: 'c9', client: 'Deepak Nair',   type: 'video',      date: '2026-02-14', time: '9:00 AM',  status: 'upcoming',  amount: price },
+];
 
 const TrainerDashboardPage = () => {
   const navigate = useNavigate();
@@ -91,18 +137,51 @@ const TrainerDashboardPage = () => {
   const [bookings, setBookings] = useState(() => {
     const saved = localStorage.getItem('td_bookings');
     if (saved) return JSON.parse(saved);
-    const price = currentTrainer?.profile?.price || currentTrainer?.profile?.fee || 1500;
-    return [
-      { id: 1, client: 'Rahul Sharma', type: 'video', date: '2026-02-10', time: '10:00 AM', status: 'upcoming', amount: price || 1500 },
-      { id: 2, client: 'Priya Patel', type: 'in-person', date: '2026-02-08', time: '2:00 PM', status: 'completed', amount: price || 1500 },
-      { id: 3, client: 'Amit Kumar', type: 'video', date: '2026-02-07', time: '11:00 AM', status: 'completed', amount: price || 1500 },
-      { id: 4, client: 'Sneha Reddy', type: 'home-visit', date: '2026-02-12', time: '4:00 PM', status: 'upcoming', amount: (price || 1500) + 500 }
-    ];
+    const price = currentTrainer?.profile?.price || currentTrainer?.profile?.fee || currentTrainer?.profile?.consultationFee || 1500;
+    return getDefaultBookings(price || 1500);
   });
 
   useEffect(() => {
     localStorage.setItem('td_bookings', JSON.stringify(bookings));
   }, [bookings]);
+
+  // ─── Fetch bookings from backend ───
+  useEffect(() => {
+    if (!currentTrainer?.id) return;
+    const trainerId = currentTrainer.backendId || currentTrainer.id;
+    bookingAPI.getTrainerBookings(trainerId).then(res => {
+      if (res.success && res.data?.length > 0) {
+        const mapped = res.data.map(b => ({
+          id: b._id,
+          clientId: b.userId?._id || b.userId,
+          client: b.userId?.name || 'Client',
+          type: b.consultationType || 'video',
+          date: b.date?.split('T')[0] || b.date,
+          time: b.timeSlot?.start || '10:00 AM',
+          status: b.status === 'confirmed' ? 'upcoming' : b.status,
+          amount: b.amount || 0
+        }));
+        setBookings(mapped);
+      }
+    }).catch(() => {});
+  }, [currentTrainer]);
+
+  // ─── Fetch availability from backend ───
+  useEffect(() => {
+    if (!currentTrainer?.id) return;
+    const trainerId = currentTrainer.backendId || currentTrainer.id;
+    trainerAPI.getAvailability(trainerId).then(res => {
+      if (res.success && res.data?.weeklySchedule?.length > 0) {
+        const mapped = res.data.weeklySchedule.map(s => ({
+          day: s.day.charAt(0).toUpperCase() + s.day.slice(1),
+          enabled: s.isAvailable,
+          start: s.startTime || '09:00 AM',
+          end: s.endTime || '06:00 PM'
+        }));
+        setAvailability(mapped);
+      }
+    }).catch(() => {});
+  }, [currentTrainer]);
 
   // ─── Derived data ───
   const profile = currentTrainer?.profile || {};
@@ -118,6 +197,81 @@ const TrainerDashboardPage = () => {
     const earnings = bookings.filter(b => b.status === 'completed').reduce((sum, b) => sum + b.amount, 0);
     return { total, upcoming, completed, earnings };
   }, [bookings]);
+
+  // ─── Chart Data ───
+  const monthlyBookingData = useMemo(() => {
+    const months = {};
+    bookings.forEach(b => {
+      const d = new Date(b.date);
+      const key = d.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+      if (!months[key]) months[key] = { month: key, bookings: 0, revenue: 0 };
+      months[key].bookings += 1;
+      if (b.status === 'completed') months[key].revenue += b.amount;
+    });
+    return Object.values(months);
+  }, [bookings]);
+
+  const bookingTypeData = useMemo(() => {
+    const types = {};
+    bookings.forEach(b => {
+      const label = b.type === 'video' ? 'Video Call' : b.type === 'in-person' ? 'In-Person' : 'Home Visit';
+      if (!types[label]) types[label] = { name: label, value: 0 };
+      types[label].value += 1;
+    });
+    return Object.values(types);
+  }, [bookings]);
+
+  const earningsOverTime = useMemo(() => {
+    const months = {};
+    bookings.filter(b => b.status === 'completed').forEach(b => {
+      const d = new Date(b.date);
+      const key = d.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+      if (!months[key]) months[key] = { month: key, earnings: 0 };
+      months[key].earnings += b.amount;
+    });
+    return Object.values(months);
+  }, [bookings]);
+
+  const customerGrowthData = useMemo(() => {
+    const months = {};
+    MOCK_CUSTOMERS.forEach(c => {
+      const d = new Date(c.joinDate);
+      const key = d.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+      if (!months[key]) months[key] = { month: key, newCustomers: 0, returning: 0 };
+      months[key].newCustomers += 1;
+    });
+    bookings.filter(b => b.status === 'completed').forEach(b => {
+      const d = new Date(b.date);
+      const key = d.toLocaleString('en-US', { month: 'short', year: '2-digit' });
+      const customer = MOCK_CUSTOMERS.find(c => c.id === b.clientId);
+      if (customer && customer.totalSessions > 1 && months[key]) {
+        months[key].returning += 1;
+      }
+    });
+    return Object.values(months);
+  }, [bookings]);
+
+  const customerStats = useMemo(() => ({
+    total: MOCK_CUSTOMERS.length,
+    active: MOCK_CUSTOMERS.filter(c => c.status === 'active').length,
+    inactive: MOCK_CUSTOMERS.filter(c => c.status === 'inactive').length,
+    premium: MOCK_CUSTOMERS.filter(c => c.plan === 'Premium').length,
+  }), []);
+
+  // ─── Custom Chart Tooltip ───
+  const CustomChartTooltip = ({ active, payload, label }) => {
+    if (!active || !payload?.length) return null;
+    return (
+      <div className="td-chart-tooltip">
+        <p className="td-chart-tooltip-label">{label}</p>
+        {payload.map((entry, idx) => (
+          <p key={idx} style={{ color: entry.color, margin: '2px 0', fontSize: 13 }}>
+            {entry.name}: <strong>{entry.dataKey === 'revenue' || entry.dataKey === 'earnings' ? `\u20B9${entry.value.toLocaleString()}` : entry.value}</strong>
+          </p>
+        ))}
+      </div>
+    );
+  };
 
   // ─── Handlers ───
   const handleLogout = () => {
@@ -161,7 +315,18 @@ const TrainerDashboardPage = () => {
   };
 
   const toggleAvailability = (index) => {
-    setAvailability(prev => prev.map((item, i) => i === index ? { ...item, enabled: !item.enabled } : item));
+    setAvailability(prev => {
+      const updated = prev.map((item, i) => i === index ? { ...item, enabled: !item.enabled } : item);
+      // Sync to backend
+      const weeklySchedule = updated.map(s => ({
+        day: s.day.toLowerCase(),
+        isAvailable: s.enabled,
+        startTime: s.start,
+        endTime: s.end
+      }));
+      trainerAPI.updateAvailability({ weeklySchedule }).catch(() => {});
+      return updated;
+    });
   };
 
   // ─── Type/Status helpers ───
@@ -234,9 +399,53 @@ const TrainerDashboardPage = () => {
         </div>
       </div>
 
+      {/* Charts */}
+      <div className="td-charts-grid">
+        <div className="td-section-card">
+          <h3 className="td-section-title"><TrendingUp size={16} /> Booking Trend</h3>
+          <div className="td-chart-container">
+            <ResponsiveContainer width="100%" height={260}>
+              <AreaChart data={monthlyBookingData}>
+                <defs>
+                  <linearGradient id="gradBookings" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2d6a4f" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#2d6a4f" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
+                <YAxis hide />
+                <RechartsTooltip content={<CustomChartTooltip />} />
+                <Area type="monotone" dataKey="bookings" name="Bookings" stroke="#2d6a4f" fillOpacity={1} fill="url(#gradBookings)" strokeWidth={3} dot={{ r: 5, fill: '#fff', stroke: '#2d6a4f', strokeWidth: 2 }} activeDot={{ r: 7, fill: '#2d6a4f' }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="td-section-card">
+          <h3 className="td-section-title"><BarChart3 size={16} /> Revenue Trend</h3>
+          <div className="td-chart-container">
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={monthlyBookingData} barSize={36}>
+                <defs>
+                  <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2d6a4f" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#40916c" stopOpacity={0.6} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
+                <YAxis hide />
+                <RechartsTooltip content={<CustomChartTooltip />} />
+                <Bar dataKey="revenue" name="Revenue" fill="url(#gradRevenue)" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
       <div className="td-section-card">
         <h3 className="td-section-title">Recent Bookings</h3>
-        {bookings.slice(0, 3).map(booking => (
+        {bookings.slice(-5).reverse().map(booking => (
           <div className="td-booking-item" key={booking.id}>
             <div className="td-booking-left">
               <Avatar src={getAvatarUrl(booking.client)} size={40} />
@@ -526,10 +735,44 @@ const TrainerDashboardPage = () => {
         </div>
       </div>
 
+      {/* Charts */}
+      <div className="td-charts-grid">
+        <div className="td-section-card">
+          <h3 className="td-section-title"><TrendingUp size={16} /> Earnings Over Time</h3>
+          <div className="td-chart-container">
+            <ResponsiveContainer width="100%" height={260}>
+              <LineChart data={earningsOverTime}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
+                <YAxis hide />
+                <RechartsTooltip content={<CustomChartTooltip />} />
+                <Line type="monotone" dataKey="earnings" name="Earnings" stroke="#52c41a" strokeWidth={3} dot={{ r: 5, fill: '#fff', stroke: '#52c41a', strokeWidth: 2 }} activeDot={{ r: 7, fill: '#52c41a' }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="td-section-card">
+          <h3 className="td-section-title"><BarChart3 size={16} /> Session Type Breakdown</h3>
+          <div className="td-chart-container">
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={bookingTypeData} cx="50%" cy="50%" innerRadius={55} outerRadius={90} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                  {bookingTypeData.map((entry, index) => (
+                    <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <RechartsTooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
       <div className="td-section-card">
         <h3 className="td-section-title"><BarChart3 size={16} /> Earning History</h3>
         {completedBookings.length === 0 && <p className="td-empty-text">No completed sessions yet.</p>}
-        {completedBookings.map(booking => (
+        {completedBookings.slice(-6).reverse().map(booking => (
           <div className="td-earning-item" key={booking.id}>
             <div className="td-earning-left">
               <CheckCircle size={18} color="#52c41a" />
@@ -543,6 +786,107 @@ const TrainerDashboardPage = () => {
             <span className="td-earning-amount">+{'\u20B9'}{booking.amount.toLocaleString()}</span>
           </div>
         ))}
+      </div>
+    </div>
+  );
+
+  // ─── Tab: Customers ───
+  const CustomersTab = (
+    <div className="td-tab-content">
+      <div className="td-stats-row">
+        <div className="td-stat-card">
+          <div className="td-stat-icon" style={{ background: 'rgba(45,106,79,0.1)' }}>
+            <Users size={20} color="#2d6a4f" />
+          </div>
+          <div className="td-stat-info">
+            <span className="td-stat-label">Total Subscribers</span>
+            <span className="td-stat-value">{customerStats.total}</span>
+          </div>
+        </div>
+        <div className="td-stat-card">
+          <div className="td-stat-icon" style={{ background: 'rgba(82,196,26,0.1)' }}>
+            <UserCheck size={20} color="#52c41a" />
+          </div>
+          <div className="td-stat-info">
+            <span className="td-stat-label">Active</span>
+            <span className="td-stat-value" style={{ color: '#52c41a' }}>{customerStats.active}</span>
+          </div>
+        </div>
+        <div className="td-stat-card">
+          <div className="td-stat-icon" style={{ background: 'rgba(255,77,79,0.1)' }}>
+            <Activity size={20} color="#ff4d4f" />
+          </div>
+          <div className="td-stat-info">
+            <span className="td-stat-label">Inactive</span>
+            <span className="td-stat-value" style={{ color: '#ff4d4f' }}>{customerStats.inactive}</span>
+          </div>
+        </div>
+        <div className="td-stat-card">
+          <div className="td-stat-icon" style={{ background: 'rgba(114,46,209,0.1)' }}>
+            <Star size={20} color="#722ed1" />
+          </div>
+          <div className="td-stat-info">
+            <span className="td-stat-label">Premium</span>
+            <span className="td-stat-value" style={{ color: '#722ed1' }}>{customerStats.premium}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="td-section-card">
+        <h3 className="td-section-title"><TrendingUp size={16} /> Customer Growth</h3>
+        <div className="td-chart-container">
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={customerGrowthData} barSize={28}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} />
+              <YAxis hide />
+              <RechartsTooltip content={<CustomChartTooltip />} />
+              <Legend />
+              <Bar dataKey="newCustomers" name="New Customers" fill="#2d6a4f" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="returning" name="Returning" fill="#1890ff" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="td-section-card">
+        <h3 className="td-section-title"><Users size={16} /> Subscribed Customers</h3>
+        <div className="td-customer-list">
+          {MOCK_CUSTOMERS.map(customer => (
+            <div className="td-customer-item" key={customer.id}>
+              <div className="td-customer-left">
+                <Avatar src={getAvatarUrl(customer.name)} size={48} />
+                <div className="td-customer-info">
+                  <span className="td-customer-name">{customer.name}</span>
+                  <span className="td-customer-email">
+                    <Mail size={12} /> {customer.email}
+                  </span>
+                  <span className="td-customer-phone">
+                    <Phone size={12} /> {customer.phone}
+                  </span>
+                </div>
+              </div>
+              <div className="td-customer-right">
+                <div className="td-customer-meta">
+                  <Tag color={customer.plan === 'Premium' ? 'purple' : customer.plan === 'Standard' ? 'blue' : 'default'}>
+                    {customer.plan}
+                  </Tag>
+                  <Tag color={customer.status === 'active' ? 'green' : 'red'}>
+                    {customer.status === 'active' ? 'Active' : 'Inactive'}
+                  </Tag>
+                </div>
+                <div className="td-customer-stats-row">
+                  <span className="td-customer-stat">
+                    <CalendarDays size={12} /> {customer.totalSessions} sessions
+                  </span>
+                  <span className="td-customer-stat">
+                    <Clock size={12} /> Last: {new Date(customer.lastVisit).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -563,6 +907,11 @@ const TrainerDashboardPage = () => {
       key: 'bookings',
       label: <span className="td-tab-label"><Calendar size={15} /> Bookings</span>,
       children: BookingsTab
+    },
+    {
+      key: 'customers',
+      label: <span className="td-tab-label"><Users size={15} /> Customers</span>,
+      children: CustomersTab
     },
     {
       key: 'availability',

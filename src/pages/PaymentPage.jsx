@@ -37,6 +37,8 @@ import {
   User,
   Calendar
 } from 'lucide-react';
+import { paymentAPI } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import './PaymentPage.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -44,6 +46,7 @@ const { Option } = Select;
 
 // Bank list for net banking
 const BANKS = [
+  // ─── Popular Banks ───
   { id: 'sbi', name: 'State Bank of India', logo: '🏦' },
   { id: 'hdfc', name: 'HDFC Bank', logo: '🏛️' },
   { id: 'icici', name: 'ICICI Bank', logo: '🏢' },
@@ -53,7 +56,46 @@ const BANKS = [
   { id: 'bob', name: 'Bank of Baroda', logo: '🏛️' },
   { id: 'canara', name: 'Canara Bank', logo: '🏢' },
   { id: 'union', name: 'Union Bank of India', logo: '🏬' },
-  { id: 'idbi', name: 'IDBI Bank', logo: '🏪' }
+  { id: 'idbi', name: 'IDBI Bank', logo: '🏪' },
+  // ─── Public Sector Banks ───
+  { id: 'boi', name: 'Bank of India', logo: '🏦' },
+  { id: 'iob', name: 'Indian Overseas Bank', logo: '🏛️' },
+  { id: 'cbi', name: 'Central Bank of India', logo: '🏢' },
+  { id: 'indian', name: 'Indian Bank', logo: '🏬' },
+  { id: 'uco', name: 'UCO Bank', logo: '🏪' },
+  { id: 'bom', name: 'Bank of Maharashtra', logo: '🏦' },
+  { id: 'psb', name: 'Punjab & Sind Bank', logo: '🏛️' },
+  // ─── Private Sector Banks ───
+  { id: 'yes', name: 'Yes Bank', logo: '🏢' },
+  { id: 'indusind', name: 'IndusInd Bank', logo: '🏬' },
+  { id: 'federal', name: 'Federal Bank', logo: '🏪' },
+  { id: 'rbl', name: 'RBL Bank', logo: '🏦' },
+  { id: 'bandhan', name: 'Bandhan Bank', logo: '🏛️' },
+  { id: 'idfc', name: 'IDFC First Bank', logo: '🏢' },
+  { id: 'south', name: 'South Indian Bank', logo: '🏬' },
+  { id: 'karur', name: 'Karur Vysya Bank', logo: '🏪' },
+  { id: 'csb', name: 'CSB Bank', logo: '🏦' },
+  { id: 'city', name: 'City Union Bank', logo: '🏛️' },
+  { id: 'tmb', name: 'Tamilnad Mercantile Bank', logo: '🏢' },
+  { id: 'dcb', name: 'DCB Bank', logo: '🏬' },
+  { id: 'dhanlaxmi', name: 'Dhanlaxmi Bank', logo: '🏪' },
+  { id: 'jk', name: 'Jammu & Kashmir Bank', logo: '🏦' },
+  { id: 'karnataka', name: 'Karnataka Bank', logo: '🏛️' },
+  { id: 'lakshmi', name: 'Lakshmi Vilas Bank', logo: '🏢' },
+  { id: 'nainital', name: 'Nainital Bank', logo: '🏬' },
+  // ─── Small Finance & Payment Banks ───
+  { id: 'au', name: 'AU Small Finance Bank', logo: '🏪' },
+  { id: 'equitas', name: 'Equitas Small Finance Bank', logo: '🏦' },
+  { id: 'ujjivan', name: 'Ujjivan Small Finance Bank', logo: '🏛️' },
+  { id: 'jana', name: 'Jana Small Finance Bank', logo: '🏢' },
+  { id: 'suryoday', name: 'Suryoday Small Finance Bank', logo: '🏬' },
+  { id: 'airtel', name: 'Airtel Payments Bank', logo: '🏪' },
+  { id: 'paytmbank', name: 'Paytm Payments Bank', logo: '🏦' },
+  { id: 'fino', name: 'Fino Payments Bank', logo: '🏛️' },
+  // ─── Co-operative & Regional Banks ───
+  { id: 'saraswat', name: 'Saraswat Co-operative Bank', logo: '🏢' },
+  { id: 'cosmos', name: 'Cosmos Co-operative Bank', logo: '🏬' },
+  { id: 'tjsb', name: 'TJSB Sahakari Bank', logo: '🏪' },
 ];
 
 // UPI apps
@@ -69,6 +111,15 @@ const PaymentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [form] = Form.useForm();
+  const { isAuthenticated } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      message.warning('Please login to proceed with payment');
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Get booking data from navigation state
   const bookingData = location.state?.bookingData || {};
@@ -81,12 +132,16 @@ const PaymentPage = () => {
 
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [selectedBank, setSelectedBank] = useState(null);
+  const [customBankName, setCustomBankName] = useState('');
   const [selectedUpiApp, setSelectedUpiApp] = useState(null);
   const [upiId, setUpiId] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null); // null, 'processing', 'success', 'failed'
   const [processingProgress, setProcessingProgress] = useState(0);
   const [saveCard, setSaveCard] = useState(false);
+  const [orderId, setOrderId] = useState(null);
+  const [transactionId, setTransactionId] = useState(null);
+  const [failureReason, setFailureReason] = useState(null);
 
   // Redirect if no booking data
   useEffect(() => {
@@ -96,60 +151,247 @@ const PaymentPage = () => {
     }
   }, [totalPrice, navigate]);
 
-  // Simulate payment processing
-  const processPayment = () => {
+  // Update booking status in localStorage when payment succeeds
+  useEffect(() => {
+    if (paymentStatus === 'success') {
+      try {
+        const bookings = JSON.parse(localStorage.getItem('stayfit_user_bookings') || '[]');
+        // Find the most recent pending booking for this trainer and update to confirmed
+        const idx = bookings.findIndex(b =>
+          String(b.trainerId) === String(trainerData.id) && b.status === 'pending'
+        );
+        if (idx !== -1) {
+          bookings[idx].status = 'confirmed';
+          bookings[idx].transactionId = transactionId || `TXN${Date.now().toString().slice(-10)}`;
+          bookings[idx].paymentMethod = paymentMethod;
+          localStorage.setItem('stayfit_user_bookings', JSON.stringify(bookings));
+        }
+      } catch {}
+    }
+  }, [paymentStatus, trainerData.id, transactionId, paymentMethod]);
+
+  // ─── Local fallback: simulate payment processing ───
+  const processPaymentLocal = () => {
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        setProcessingProgress(prev => {
+          if (prev >= 100) { clearInterval(interval); return 100; }
+          return prev + 10;
+        });
+      }, 300);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        setProcessingProgress(100);
+        const isSuccess = Math.random() > 0.05;
+        const txnId = `TXN${Date.now().toString().slice(-10)}${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        setTimeout(() => resolve({ success: isSuccess, transactionId: txnId }), 500);
+      }, 3000);
+    });
+  };
+
+  // ─── Helper: Create order on backend (or skip if backend is down) ───
+  const ensureOrder = async () => {
+    if (orderId) return orderId; // Already created
+    try {
+      const res = await paymentAPI.createOrder({
+        trainerId: trainerData.id || trainerData.trainerId || 'unknown',
+        trainerName: trainerData.name || '',
+        trainerSpecialization: trainerData.specialization || '',
+        trainerImage: trainerData.image || '',
+        consultationType: bookingData.consultationType || 'video',
+        date: bookingData.date || new Date().toISOString().slice(0, 10),
+        timeSlot: bookingData.timeSlot || '',
+        duration: bookingData.duration || 30,
+        basePrice,
+        homeVisitFee,
+        subtotal,
+        gstAmount,
+        totalAmount: totalPrice,
+      });
+      const newOrderId = res.data.orderId;
+      setOrderId(newOrderId);
+      return newOrderId;
+    } catch (err) {
+      if (!err.status) {
+        console.warn('Backend unavailable, using offline payment mode');
+        return null; // Will trigger local fallback
+      }
+      throw err;
+    }
+  };
+
+  // ─── Handle card payment (API first, local fallback) ───
+  const handleCardPayment = async (values) => {
     setIsProcessing(true);
     setPaymentStatus('processing');
     setProcessingProgress(0);
 
-    // Simulate progress
-    const interval = setInterval(() => {
-      setProcessingProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
+    try {
+      const currentOrderId = await ensureOrder();
+
+      if (currentOrderId) {
+        // ─── API payment ───
+        const progressInterval = setInterval(() => {
+          setProcessingProgress(prev => prev < 80 ? prev + 8 : prev);
+        }, 400);
+
+        try {
+          const [mm, yy] = (values.expiry || '').split('/');
+          const res = await paymentAPI.payByCard({
+            orderId: currentOrderId,
+            cardNumber: values.cardNumber,
+            expiryMonth: mm?.trim() || '',
+            expiryYear: yy?.trim() || '',
+            cvv: values.cvv,
+            cardholderName: values.cardName,
+            saveCard,
+          });
+          clearInterval(progressInterval);
+          setProcessingProgress(100);
+          setTransactionId(res.data.transactionId);
+          setTimeout(() => {
+            setIsProcessing(false);
+            setPaymentStatus('success');
+          }, 500);
+        } catch (payErr) {
+          clearInterval(progressInterval);
+          setProcessingProgress(100);
+          setTransactionId(payErr.data?.transactionId || null);
+          setFailureReason(payErr.data?.reason || payErr.message || 'Payment declined by bank');
+          setTimeout(() => {
+            setIsProcessing(false);
+            setPaymentStatus('failed');
+          }, 500);
         }
-        return prev + 10;
-      });
-    }, 300);
-
-    // Simulate payment completion
-    setTimeout(() => {
-      clearInterval(interval);
-      setProcessingProgress(100);
-
-      // 95% success rate simulation
-      const isSuccess = Math.random() > 0.05;
-
-      setTimeout(() => {
+      } else {
+        // ─── Offline fallback ───
+        const result = await processPaymentLocal();
+        setTransactionId(result.transactionId);
         setIsProcessing(false);
-        setPaymentStatus(isSuccess ? 'success' : 'failed');
-      }, 500);
-    }, 3000);
+        setPaymentStatus(result.success ? 'success' : 'failed');
+      }
+    } catch (err) {
+      setIsProcessing(false);
+      setPaymentStatus(null);
+      message.error(err.message || 'Failed to process payment');
+    }
   };
 
-  // Handle card payment
-  const handleCardPayment = (values) => {
-    console.log('Card payment:', values);
-    processPayment();
-  };
-
-  // Handle UPI payment
-  const handleUpiPayment = () => {
+  // ─── Handle UPI payment (API first, local fallback) ───
+  const handleUpiPayment = async () => {
     if (!upiId && !selectedUpiApp) {
       message.error('Please enter UPI ID or select an app');
       return;
     }
-    processPayment();
+
+    setIsProcessing(true);
+    setPaymentStatus('processing');
+    setProcessingProgress(0);
+
+    try {
+      const currentOrderId = await ensureOrder();
+
+      if (currentOrderId) {
+        const progressInterval = setInterval(() => {
+          setProcessingProgress(prev => prev < 80 ? prev + 8 : prev);
+        }, 400);
+
+        try {
+          const res = await paymentAPI.payByUpi({
+            orderId: currentOrderId,
+            upiId: upiId || null,
+            upiApp: selectedUpiApp || null,
+          });
+          clearInterval(progressInterval);
+          setProcessingProgress(100);
+          setTransactionId(res.data.transactionId);
+          setTimeout(() => {
+            setIsProcessing(false);
+            setPaymentStatus('success');
+          }, 500);
+        } catch (payErr) {
+          clearInterval(progressInterval);
+          setProcessingProgress(100);
+          setTransactionId(payErr.data?.transactionId || null);
+          setFailureReason(payErr.data?.reason || payErr.message || 'UPI payment failed');
+          setTimeout(() => {
+            setIsProcessing(false);
+            setPaymentStatus('failed');
+          }, 500);
+        }
+      } else {
+        const result = await processPaymentLocal();
+        setTransactionId(result.transactionId);
+        setIsProcessing(false);
+        setPaymentStatus(result.success ? 'success' : 'failed');
+      }
+    } catch (err) {
+      setIsProcessing(false);
+      setPaymentStatus(null);
+      message.error(err.message || 'Failed to process payment');
+    }
   };
 
-  // Handle net banking payment
-  const handleNetBankingPayment = () => {
+  // ─── Handle net banking payment (API first, local fallback) ───
+  const handleNetBankingPayment = async () => {
     if (!selectedBank) {
       message.error('Please select a bank');
       return;
     }
-    processPayment();
+    if (selectedBank === 'other' && !customBankName.trim()) {
+      message.error('Please enter your bank name');
+      return;
+    }
+
+    setIsProcessing(true);
+    setPaymentStatus('processing');
+    setProcessingProgress(0);
+
+    try {
+      const currentOrderId = await ensureOrder();
+
+      if (currentOrderId) {
+        const progressInterval = setInterval(() => {
+          setProcessingProgress(prev => prev < 80 ? prev + 8 : prev);
+        }, 400);
+
+        const bankEntry = BANKS.find(b => b.id === selectedBank);
+        try {
+          const res = await paymentAPI.payByNetbanking({
+            orderId: currentOrderId,
+            bankId: selectedBank,
+            bankName: selectedBank === 'other' ? customBankName.trim() : (bankEntry?.name || selectedBank),
+            isCustomBank: selectedBank === 'other',
+          });
+          clearInterval(progressInterval);
+          setProcessingProgress(100);
+          setTransactionId(res.data.transactionId);
+          setTimeout(() => {
+            setIsProcessing(false);
+            setPaymentStatus('success');
+          }, 500);
+        } catch (payErr) {
+          clearInterval(progressInterval);
+          setProcessingProgress(100);
+          setTransactionId(payErr.data?.transactionId || null);
+          setFailureReason(payErr.data?.reason || payErr.message || 'Net banking payment failed');
+          setTimeout(() => {
+            setIsProcessing(false);
+            setPaymentStatus('failed');
+          }, 500);
+        }
+      } else {
+        const result = await processPaymentLocal();
+        setTransactionId(result.transactionId);
+        setIsProcessing(false);
+        setPaymentStatus(result.success ? 'success' : 'failed');
+      }
+    } catch (err) {
+      setIsProcessing(false);
+      setPaymentStatus(null);
+      message.error(err.message || 'Failed to process payment');
+    }
   };
 
   // Copy UPI ID
@@ -162,6 +404,9 @@ const PaymentPage = () => {
   const retryPayment = () => {
     setPaymentStatus(null);
     setProcessingProgress(0);
+    setTransactionId(null);
+    setFailureReason(null);
+    setOrderId(null);
   };
 
   // Card form validation
@@ -206,7 +451,7 @@ const PaymentPage = () => {
                 <div className="success-info">
                   <div className="info-row">
                     <Text type="secondary">Transaction ID</Text>
-                    <Text strong>TXN{Date.now().toString().slice(-10)}</Text>
+                    <Text strong>{transactionId || `TXN${Date.now().toString().slice(-10)}`}</Text>
                   </div>
                   <div className="info-row">
                     <Text type="secondary">Payment Method</Text>
@@ -259,7 +504,7 @@ const PaymentPage = () => {
                 <Text>Your payment of <strong>₹{totalPrice.toLocaleString()}</strong> could not be processed.</Text>
                 <Alert
                   message="What went wrong?"
-                  description="The payment was declined by your bank. This could be due to insufficient funds, incorrect card details, or a security block."
+                  description={failureReason || "The payment was declined by your bank. This could be due to insufficient funds, incorrect card details, or a security block."}
                   type="warning"
                   showIcon
                   style={{ marginTop: 24 }}
@@ -569,20 +814,43 @@ const PaymentPage = () => {
                     <Text type="secondary" className="section-label">All Banks</Text>
                     <Select
                       size="large"
-                      placeholder="Select your bank"
+                      placeholder="Search or select your bank"
                       style={{ width: '100%' }}
                       value={selectedBank}
-                      onChange={setSelectedBank}
+                      onChange={(val) => {
+                        setSelectedBank(val);
+                        if (val !== 'other') setCustomBankName('');
+                      }}
                       showSearch
                       optionFilterProp="children"
+                      filterOption={(input, option) =>
+                        option.children?.toString().toLowerCase().includes(input.toLowerCase())
+                      }
                     >
                       {BANKS.map(bank => (
                         <Option key={bank.id} value={bank.id}>
                           {bank.logo} {bank.name}
                         </Option>
                       ))}
+                      <Option key="other" value="other">
+                        ✏️ Other Bank (type manually)
+                      </Option>
                     </Select>
                   </div>
+
+                  {/* Custom Bank Name Input */}
+                  {selectedBank === 'other' && (
+                    <div style={{ marginTop: 16 }}>
+                      <Text type="secondary" className="section-label">Enter Your Bank Name</Text>
+                      <Input
+                        size="large"
+                        placeholder="e.g. Gramin Bank, Co-operative Bank..."
+                        value={customBankName}
+                        onChange={(e) => setCustomBankName(e.target.value)}
+                        style={{ marginTop: 8 }}
+                      />
+                    </div>
+                  )}
 
                   <Alert
                     message="You will be redirected to your bank's website"
@@ -598,7 +866,7 @@ const PaymentPage = () => {
                     block
                     className="pay-button"
                     onClick={handleNetBankingPayment}
-                    disabled={!selectedBank}
+                    disabled={!selectedBank || (selectedBank === 'other' && !customBankName.trim())}
                     icon={<Lock size={18} />}
                   >
                     Pay ₹{totalPrice.toLocaleString()}

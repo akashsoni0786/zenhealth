@@ -1,0 +1,551 @@
+/* ═══════════════════════════════════════════════
+   Health Assessment Wizard — Premium UI
+   ═══════════════════════════════════════════════ */
+
+.haw-page {
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+}
+
+/* ─── Header Banner ─── */
+.haw-header {
+  position: relative;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 40%, #40916c 100%);
+  border-radius: 24px;
+  padding: 36px 32px 32px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  color: #fff;
+  text-align: center;
+}
+
+.haw-header::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -30px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+}
+
+.haw-header::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: 20%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+}
+
+.haw-header-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.haw-header h2.ant-typography {
+  color: #fff !important;
+  margin: 0 0 6px !important;
+  font-size: 26px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.haw-header-subtitle {
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 14px;
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+/* ─── Main Card ─── */
+.haw-card {
+  border-radius: 24px !important;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden;
+}
+
+.haw-card .ant-card-body {
+  padding: 36px 32px;
+}
+
+/* ─── Steps ─── */
+.haw-steps {
+  margin-bottom: 36px !important;
+}
+
+.haw-steps .ant-steps-item-icon {
+  width: 38px !important;
+  height: 38px !important;
+  line-height: 38px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  transition: all 0.3s ease;
+}
+
+.haw-steps .ant-steps-item-process .ant-steps-item-icon {
+  background: linear-gradient(135deg, #1b4332, #2d6a4f) !important;
+  border-color: #1b4332 !important;
+  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.35);
+}
+
+.haw-steps .ant-steps-item-finish .ant-steps-item-icon {
+  background: #e8f5ee !important;
+  border-color: #2d6a4f !important;
+}
+
+.haw-steps .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon {
+  color: #2d6a4f !important;
+}
+
+.haw-steps .ant-steps-item-title {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+}
+
+.haw-steps .ant-steps-item-process .ant-steps-item-title {
+  color: #1b4332 !important;
+}
+
+/* ─── BMI Banner ─── */
+.haw-bmi-banner {
+  margin-bottom: 28px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #f0f7f4 0%, #e8f5ee 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(45, 106, 79, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.haw-bmi-banner .ant-statistic-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.haw-bmi-banner .ant-statistic-content-value {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+}
+
+.haw-bmi-info {
+  text-align: left;
+}
+
+.haw-bmi-info .ant-tag {
+  border-radius: 8px !important;
+  font-weight: 600;
+  padding: 2px 10px;
+}
+
+/* ─── Step Content ─── */
+.haw-step-content {
+  animation: hawFadeIn 0.35s ease;
+}
+
+@keyframes hawFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Form Styling ─── */
+.haw-card .ant-form-item-label > label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1b4332;
+}
+
+.haw-card .ant-input,
+.haw-card .ant-input-number,
+.haw-card .ant-select-selector,
+.haw-card .ant-input-affix-wrapper {
+  border-radius: 12px !important;
+  height: 46px !important;
+  font-size: 15px !important;
+  border: 1.5px solid #e8e8e8 !important;
+  transition: all 0.25s ease !important;
+}
+
+.haw-card .ant-input:hover,
+.haw-card .ant-input-number:hover,
+.haw-card .ant-select-selector:hover {
+  border-color: #2d6a4f !important;
+}
+
+.haw-card .ant-input:focus,
+.haw-card .ant-input-number-focused,
+.haw-card .ant-select-focused .ant-select-selector {
+  border-color: #2d6a4f !important;
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.08) !important;
+}
+
+.haw-card .ant-input-number {
+  width: 100%;
+}
+
+.haw-card .ant-input-number-input {
+  height: 44px !important;
+  font-size: 15px !important;
+}
+
+.haw-card textarea.ant-input {
+  height: auto !important;
+  min-height: 80px !important;
+  border-radius: 14px !important;
+  padding: 12px 16px;
+}
+
+.haw-card .ant-select-selector {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* ─── Radio Buttons (Solid style) ─── */
+.haw-card .ant-radio-group-solid .ant-radio-button-wrapper {
+  border-radius: 12px !important;
+  height: 44px !important;
+  line-height: 42px !important;
+  padding: 0 20px !important;
+  font-weight: 500;
+  font-size: 14px;
+  margin-right: 10px;
+  border: 1.5px solid #e8e8e8;
+  transition: all 0.25s ease;
+}
+
+.haw-card .ant-radio-group-solid .ant-radio-button-wrapper::before {
+  display: none !important;
+}
+
+.haw-card .ant-radio-group-solid .ant-radio-button-wrapper:hover {
+  border-color: #2d6a4f;
+  color: #2d6a4f;
+}
+
+.haw-card .ant-radio-group-solid .ant-radio-button-wrapper-checked {
+  background: linear-gradient(135deg, #1b4332, #2d6a4f) !important;
+  border-color: #1b4332 !important;
+  box-shadow: 0 4px 12px rgba(27, 67, 50, 0.25) !important;
+}
+
+/* ─── Radio (Normal) ─── */
+.haw-card .ant-radio-wrapper {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #f0f0f0;
+  margin-right: 12px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.haw-card .ant-radio-wrapper:hover {
+  border-color: #2d6a4f;
+  background: #f8fdf9;
+}
+
+.haw-card .ant-radio-wrapper-checked {
+  border-color: #2d6a4f;
+  background: linear-gradient(135deg, #f0f7f4, #e8f5ee);
+  box-shadow: 0 2px 8px rgba(45, 106, 79, 0.1);
+}
+
+.haw-card .ant-radio-checked .ant-radio-inner {
+  border-color: #2d6a4f !important;
+  background: #2d6a4f !important;
+}
+
+/* ─── Rating Radio Group (1-5) ─── */
+.haw-rating-group .ant-radio-wrapper {
+  width: 50px;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0 6px 0 0;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.haw-rating-group .ant-radio-wrapper .ant-radio {
+  display: none;
+}
+
+.haw-rating-group .ant-radio-wrapper-checked {
+  background: linear-gradient(135deg, #1b4332, #2d6a4f) !important;
+  border-color: #1b4332 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.3);
+}
+
+/* ─── Note Card (Review Step) ─── */
+.haw-note-card {
+  background: linear-gradient(135deg, #fff9ed 0%, #fff7e6 100%) !important;
+  border: 1px solid #ffe58f !important;
+  border-radius: 16px !important;
+  padding: 16px 20px;
+}
+
+.haw-note-card .ant-card-body {
+  padding: 0 !important;
+}
+
+/* ─── Navigation Buttons ─── */
+.haw-nav-buttons {
+  margin-top: 36px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.haw-btn-prev {
+  border-radius: 14px !important;
+  height: 50px !important;
+  padding: 0 28px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border: 2px solid #e8e8e8 !important;
+  color: #555 !important;
+  transition: all 0.25s ease !important;
+}
+
+.haw-btn-prev:hover {
+  border-color: #2d6a4f !important;
+  color: #2d6a4f !important;
+  background: #f8fdf9 !important;
+}
+
+.haw-btn-next {
+  border-radius: 14px !important;
+  height: 50px !important;
+  padding: 0 32px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.3) !important;
+  transition: all 0.25s ease !important;
+}
+
+.haw-btn-next:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(27, 67, 50, 0.4) !important;
+}
+
+.haw-btn-submit {
+  border-radius: 14px !important;
+  height: 54px !important;
+  padding: 0 36px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%) !important;
+  border: none !important;
+  box-shadow: 0 6px 24px rgba(27, 67, 50, 0.35) !important;
+  transition: all 0.3s ease !important;
+  letter-spacing: 0.3px;
+}
+
+.haw-btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(27, 67, 50, 0.45) !important;
+}
+
+/* ─── Analyzing Screen ─── */
+.haw-analyzing {
+  text-align: center;
+  padding: 80px 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.haw-analyzing-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #e8f5ee 0%, #d4edda 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+  animation: hawPulse 2s ease-in-out infinite;
+}
+
+@keyframes hawPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 4px 20px rgba(45, 106, 79, 0.2); }
+  50% { transform: scale(1.08); box-shadow: 0 8px 32px rgba(45, 106, 79, 0.35); }
+}
+
+.haw-analyzing h3.ant-typography {
+  color: #1b4332 !important;
+  font-size: 22px;
+  margin-bottom: 10px !important;
+}
+
+.haw-analyzing .ant-progress {
+  max-width: 400px;
+  margin: 24px auto 0;
+}
+
+.haw-analyzing .ant-progress-bg {
+  background: linear-gradient(90deg, #1b4332, #2d6a4f, #40916c) !important;
+  height: 10px !important;
+  border-radius: 5px !important;
+}
+
+.haw-analyzing-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 28px;
+  text-align: left;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.haw-analyzing-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #555;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: #f8fdf9;
+  border: 1px solid #e8f5ee;
+  transition: all 0.3s ease;
+}
+
+.haw-analyzing-step.active {
+  color: #1b4332;
+  font-weight: 600;
+  background: #e8f5ee;
+  border-color: #b7eb8f;
+}
+
+.haw-analyzing-step.done {
+  color: #52c41a;
+}
+
+/* ─── Step Progress Bar (top of card) ─── */
+.haw-progress-bar {
+  height: 5px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+
+.haw-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1b4332, #2d6a4f, #40916c);
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Step Label Badge ─── */
+.haw-step-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #e8f5ee, #d4edda);
+  color: #1b4332;
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .haw-page {
+    padding: 0 10px 32px;
+  }
+
+  .haw-header {
+    padding: 28px 20px 24px;
+    border-radius: 18px;
+  }
+
+  .haw-header h2.ant-typography {
+    font-size: 22px;
+  }
+
+  .haw-card .ant-card-body {
+    padding: 24px 20px;
+  }
+
+  .haw-steps .ant-steps-item-title {
+    font-size: 11px !important;
+  }
+
+  .haw-bmi-banner {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .haw-bmi-info {
+    text-align: center;
+  }
+
+  .haw-rating-group .ant-radio-wrapper {
+    width: 44px;
+    height: 44px;
+    font-size: 14px;
+    margin: 0 4px 0 0;
+  }
+
+  .haw-nav-buttons {
+    flex-direction: column-reverse;
+  }
+
+  .haw-btn-next,
+  .haw-btn-submit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .haw-header-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .haw-card .ant-radio-group-solid .ant-radio-button-wrapper {
+    padding: 0 14px !important;
+    font-size: 13px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  .haw-card .ant-radio-wrapper {
+    margin-right: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}

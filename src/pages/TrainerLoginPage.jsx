@@ -14,7 +14,7 @@ const { Option } = Select;
 
 const TrainerLoginPage = () => {
   const navigate = useNavigate();
-  const { trainerRegister, trainerLogin, sendOtp, verifyOtp, resetPassword } = useTrainerAuth();
+  const { trainerRegister, trainerLogin, sendOtp, verifyOtp, resetPassword, adminLogin } = useTrainerAuth();
 
   // ─── Login State ───
   const [loginMethod, setLoginMethod] = useState('password'); // 'password' | 'otp'
@@ -38,6 +38,10 @@ const TrainerLoginPage = () => {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotForm] = Form.useForm();
 
+  // ─── Admin Login State ───
+  const [adminLoading, setAdminLoading] = useState(false);
+  const [adminForm] = Form.useForm();
+
   // ─── Redirect Helper ───
   const redirectAfterLogin = (trainer) => {
     if (trainer.status === 'verified') {
@@ -48,95 +52,125 @@ const TrainerLoginPage = () => {
   };
 
   // ─── Password Login ───
-  const handlePasswordLogin = (values) => {
+  const handlePasswordLogin = async (values) => {
     setLoginLoading(true);
-    setTimeout(() => {
-      const result = trainerLogin(values.email, values.password);
-      setLoginLoading(false);
+    try {
+      const result = await trainerLogin(values.email, values.password);
       if (result.error) {
         message.error(result.error);
       } else {
         message.success('Login successful! Welcome back.');
         redirectAfterLogin(result.trainer);
       }
-    }, 800);
+    } catch {
+      message.error('Something went wrong. Please try again.');
+    } finally {
+      setLoginLoading(false);
+    }
   };
 
   // ─── Send OTP ───
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     const contact = loginForm.getFieldValue('otpContact');
     if (!contact || contact.trim() === '') {
       message.warning('Please enter your email or phone number');
       return;
     }
     setOtpLoading(true);
-    setTimeout(() => {
-      const result = sendOtp(contact.trim());
-      setOtpLoading(false);
+    try {
+      const result = await sendOtp(contact.trim());
       if (result.error) {
         message.error(result.error);
       } else {
         setOtpTrainerId(result.trainerId);
         setOtpContact(contact.trim());
         setOtpStep('verify');
-        message.success('OTP sent! (Demo OTP: 123456)');
+        message.success(`OTP sent! (Demo OTP: ${result.otp})`);
       }
-    }, 800);
+    } catch {
+      message.error('Failed to send OTP. Please try again.');
+    } finally {
+      setOtpLoading(false);
+    }
   };
 
   // ─── Verify OTP ───
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     const otp = loginForm.getFieldValue('otp');
     if (!otp || otp.length !== 6) {
       message.warning('Please enter the 6-digit OTP');
       return;
     }
     setOtpLoading(true);
-    setTimeout(() => {
-      const result = verifyOtp(otpTrainerId, otp);
-      setOtpLoading(false);
+    try {
+      const result = await verifyOtp(otpTrainerId, otp);
       if (result.error) {
         message.error(result.error);
       } else {
         message.success('OTP verified! Welcome back.');
         redirectAfterLogin(result.trainer);
       }
-    }, 800);
+    } catch {
+      message.error('OTP verification failed. Please try again.');
+    } finally {
+      setOtpLoading(false);
+    }
   };
 
   // ─── Resend OTP ───
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     setOtpLoading(true);
-    setTimeout(() => {
-      const result = sendOtp(otpContact);
-      setOtpLoading(false);
+    try {
+      const result = await sendOtp(otpContact);
       if (result.error) {
         message.error(result.error);
       } else {
-        message.success('OTP resent! (Demo OTP: 123456)');
+        message.success(`OTP resent! (Demo OTP: ${result.otp})`);
       }
-    }, 600);
+    } catch {
+      message.error('Failed to resend OTP.');
+    } finally {
+      setOtpLoading(false);
+    }
   };
 
   // ─── Register ───
-  const handleRegister = (values) => {
+  const handleRegister = async (values) => {
     setRegisterLoading(true);
-    setTimeout(() => {
-      const result = trainerRegister({
+    try {
+      const result = await trainerRegister({
         name: values.name,
         email: values.email,
         phone: values.phone,
         category: values.category,
         password: values.password,
       });
-      setRegisterLoading(false);
       if (result.error) {
         message.error(result.error);
       } else {
         message.success('Registration successful! Complete your profile next.');
         navigate('/trainer-profile-setup');
       }
-    }, 1000);
+    } catch {
+      message.error('Something went wrong. Please try again.');
+    } finally {
+      setRegisterLoading(false);
+    }
+  };
+
+  // ─── Admin Login ───
+  const handleAdminLogin = (values) => {
+    setAdminLoading(true);
+    setTimeout(() => {
+      const result = adminLogin(values.adminEmail, values.adminPassword);
+      setAdminLoading(false);
+      if (result.error) {
+        message.error(result.error);
+      } else {
+        message.success('Welcome to Admin Dashboard!');
+        navigate('/admin');
+      }
+    }, 600);
   };
 
   // ─── Forgot Password Step 1: Verify Email ───
@@ -459,6 +493,70 @@ const TrainerLoginPage = () => {
     </Form>
   );
 
+  // ─── Admin Tab Content ───
+  const renderAdminTab = () => (
+    <Form
+      form={adminForm}
+      layout="vertical"
+      onFinish={handleAdminLogin}
+      autoComplete="off"
+      size="large"
+    >
+      <div style={{
+        textAlign: 'center',
+        marginBottom: 20,
+        padding: '16px',
+        background: 'rgba(114, 46, 209, 0.06)',
+        borderRadius: 12,
+        border: '1px solid rgba(114, 46, 209, 0.15)'
+      }}>
+        <ShieldCheck size={28} color="#722ed1" style={{ marginBottom: 8 }} />
+        <Text style={{ display: 'block', fontSize: 13, color: '#722ed1' }}>
+          Admin access for managing trainer verifications
+        </Text>
+      </div>
+
+      <Form.Item
+        name="adminEmail"
+        rules={[
+          { required: true, message: 'Please enter admin email' },
+          { type: 'email', message: 'Please enter a valid email' },
+        ]}
+      >
+        <Input
+          prefix={<Mail size={18} color="#999" />}
+          placeholder="Admin email"
+        />
+      </Form.Item>
+
+      <Form.Item
+        name="adminPassword"
+        rules={[
+          { required: true, message: 'Please enter admin password' },
+        ]}
+      >
+        <Input.Password
+          prefix={<Lock size={18} color="#999" />}
+          placeholder="Admin password"
+        />
+      </Form.Item>
+
+      <Form.Item style={{ marginBottom: 0 }}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          block
+          loading={adminLoading}
+          className="trainer-submit-btn"
+          style={{ background: '#722ed1', borderColor: '#722ed1' }}
+        >
+          <ShieldCheck size={18} style={{ marginRight: 8 }} />
+          Admin Sign In
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+
   // ─── Tab Items ───
   const tabItems = [
     {
@@ -478,6 +576,15 @@ const TrainerLoginPage = () => {
         </span>
       ),
       children: renderRegisterTab(),
+    },
+    {
+      key: 'admin',
+      label: (
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ShieldCheck size={16} /> Admin
+        </span>
+      ),
+      children: renderAdminTab(),
     },
   ];
 
@@ -503,6 +610,7 @@ const TrainerLoginPage = () => {
           onChange={() => {
             resetLoginState();
             registerForm.resetFields();
+            adminForm.resetFields();
           }}
         />
 
@@ -526,8 +634,6 @@ const TrainerLoginPage = () => {
           <Text type="secondary">
             Are you a customer?{' '}
             <Link to="/login">Customer Login</Link>
-            <span className="footer-divider">|</span>
-            <Link to="/admin">Admin Login</Link>
           </Text>
         </div>
       </Card>

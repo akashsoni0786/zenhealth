@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Card,
@@ -24,7 +24,8 @@ import {
   message,
   Tooltip,
   Progress,
-  Space
+  Space,
+  Rate
 } from 'antd';
 import {
   ArrowLeft,
@@ -49,14 +50,60 @@ import {
   Sparkles,
   BarChart3,
   Target,
-  Wallet
+  Wallet,
+  ShieldCheck,
+  Heart,
+  ThumbsUp,
+  Send,
+  GraduationCap,
+  Briefcase,
+  Globe,
+  Zap
 } from 'lucide-react';
-import { TRAINER_DATA, getCategoryColor, getCategoryLabel } from '../data/trainerData';
+import { getCategoryColor, getCategoryLabel } from '../data/trainerData';
+import { useSearch } from '../context/SearchContext';
+import { useTrainerAuth } from '../context/TrainerAuthContext';
+import { useAuth } from '../context/AuthContext';
+import { reviewAPI, bookingAPI } from '../utils/api';
 import dayjs from 'dayjs';
 import './TrainerConsultationPage.css';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
+
+// Mock reviews data
+const MOCK_REVIEWS = [
+  {
+    id: 1, name: 'Rahul Sharma', avatar: 'https://i.pravatar.cc/150?img=11',
+    rating: 5, date: '2026-01-28', helpful: 12,
+    comment: 'Absolutely amazing trainer! The personalized workout plan has transformed my fitness journey. Highly recommend for anyone looking to get serious about health.'
+  },
+  {
+    id: 2, name: 'Priya Patel', avatar: 'https://i.pravatar.cc/150?img=5',
+    rating: 4, date: '2026-01-22', helpful: 8,
+    comment: 'Very knowledgeable and patient. Explained every exercise clearly and adjusted the plan based on my progress. Great experience overall.'
+  },
+  {
+    id: 3, name: 'Amit Kumar', avatar: 'https://i.pravatar.cc/150?img=12',
+    rating: 5, date: '2026-01-15', helpful: 15,
+    comment: 'Best investment in my health! Lost 8kg in 3 months with the guided diet and exercise plan. The video consultations are very convenient.'
+  },
+  {
+    id: 4, name: 'Sneha Gupta', avatar: 'https://i.pravatar.cc/150?img=9',
+    rating: 4, date: '2026-01-10', helpful: 6,
+    comment: 'Great trainer with deep knowledge of ayurvedic principles combined with modern fitness. The holistic approach really works.'
+  },
+  {
+    id: 5, name: 'Vikram Singh', avatar: 'https://i.pravatar.cc/150?img=14',
+    rating: 5, date: '2025-12-28', helpful: 10,
+    comment: 'Been training for 6 months now and the results are incredible. Very professional and always on time for sessions. Keeps me motivated!'
+  },
+  {
+    id: 6, name: 'Anita Desai', avatar: 'https://i.pravatar.cc/150?img=25',
+    rating: 3, date: '2025-12-20', helpful: 3,
+    comment: 'Good trainer overall. Sometimes sessions feel a bit rushed but the advice and plans provided are solid. Would recommend for beginners.'
+  },
+];
 
 // Mock consultation data
 const generateMockConsultations = (trainerId) => {
@@ -88,16 +135,51 @@ const generateMockConsultations = (trainerId) => {
 const TrainerConsultationPage = () => {
   const { trainerId } = useParams();
   const navigate = useNavigate();
+  const { allTrainers } = useSearch();
+  const { adminLoggedIn, currentTrainer, registeredTrainers, verifyTrainer, rejectTrainer } = useTrainerAuth();
+  const { user, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [reviews, setReviews] = useState(MOCK_REVIEWS);
+  const [reviewText, setReviewText] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
+  const [helpfulIds, setHelpfulIds] = useState([]);
 
-  // Get trainer data
-  const trainer = useMemo(() => {
-    const id = parseInt(trainerId);
-    return TRAINER_DATA.find(t => t.id === id) || TRAINER_DATA[0];
+  // ─── Fetch reviews from backend ───
+  useEffect(() => {
+    if (!trainerId) return;
+    reviewAPI.getTrainerReviews(trainerId).then(res => {
+      if (res.success && res.data?.length > 0) {
+        const mapped = res.data.map(r => ({
+          id: r._id,
+          name: r.userId?.name || 'User',
+          avatar: `https://i.pravatar.cc/150?img=${Math.abs(r._id?.charCodeAt?.(0) || 0) % 70}`,
+          rating: r.rating,
+          date: r.createdAt?.split('T')[0] || dayjs().format('YYYY-MM-DD'),
+          helpful: 0,
+          comment: r.comment,
+          trainerReply: r.trainerReply || null
+        }));
+        setReviews(mapped);
+      }
+    }).catch(() => {});
   }, [trainerId]);
+
+  // Get trainer data - support both numeric and string IDs
+  const trainer = useMemo(() => {
+    const numId = parseInt(trainerId);
+    return allTrainers.find(t => t.id === numId || t.id === trainerId || t.id === `reg_${trainerId}`) || allTrainers[0];
+  }, [trainerId, allTrainers]);
+
+  // Check if the current viewer is the trainer themselves or admin
+  const isOwner = currentTrainer && (
+    currentTrainer.id === trainer?.id ||
+    `reg_${currentTrainer.id}` === trainer?.id ||
+    currentTrainer.id === parseInt(trainerId)
+  );
+  const canSeePrivateData = isOwner || adminLoggedIn;
 
   // Mock consultations
   const consultations = useMemo(() => generateMockConsultations(trainerId), [trainerId]);
@@ -140,6 +222,68 @@ const TrainerConsultationPage = () => {
   const handleStartCall = (consultation) => {
     message.info(`Starting video call with ${consultation.client.name}...`);
   };
+
+  // Review handlers
+  const handleSubmitReview = () => {
+    if (!reviewText.trim()) {
+      message.warning('Please write a review before submitting');
+      return;
+    }
+    const newReview = {
+      id: Date.now(),
+      name: isAuthenticated ? (user?.name || 'Anonymous User') : 'Guest User',
+      avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+      rating: reviewRating,
+      date: dayjs().format('YYYY-MM-DD'),
+      helpful: 0,
+      comment: reviewText.trim()
+    };
+    setReviews(prev => [newReview, ...prev]);
+    setReviewText('');
+    setReviewRating(5);
+    message.success('Review submitted successfully!');
+    // Sync to backend
+    reviewAPI.submit({
+      trainerId,
+      rating: reviewRating,
+      comment: reviewText.trim(),
+      title: ''
+    }).catch(() => {});
+  };
+
+  const handleHelpful = (reviewId) => {
+    if (helpfulIds.includes(reviewId)) return;
+    setHelpfulIds(prev => [...prev, reviewId]);
+    setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, helpful: r.helpful + 1 } : r));
+  };
+
+  // Derived review stats
+  const reviewStats = useMemo(() => {
+    const total = reviews.length;
+    const avg = total > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / total).toFixed(1) : 0;
+    const dist = [5, 4, 3, 2, 1].map(star => ({
+      star,
+      count: reviews.filter(r => r.rating === star).length,
+      pct: total > 0 ? Math.round((reviews.filter(r => r.rating === star).length / total) * 100) : 0
+    }));
+    return { total, avg, dist };
+  }, [reviews]);
+
+  // Upcoming slots for customers
+  const upcomingSlots = useMemo(() => {
+    const slots = [];
+    for (let i = 1; i <= 7; i++) {
+      const date = dayjs().add(i, 'day');
+      if (date.day() !== 0) {
+        const times = ['09:00 AM', '10:30 AM', '02:00 PM', '04:30 PM', '06:00 PM'];
+        const available = times.filter(() => Math.random() > 0.35);
+        if (available.length > 0) {
+          slots.push({ date: date.format('YYYY-MM-DD'), dayLabel: date.format('ddd, MMM D'), times: available });
+        }
+      }
+    }
+    return slots;
+  }, []);
 
   // Get status config
   const getStatusConfig = (status) => {
@@ -300,16 +444,18 @@ const TrainerConsultationPage = () => {
                 />
               </Card>
             </Col>
-            <Col xs={12} sm={6}>
-              <Card className="stat-card earnings">
-                <Statistic
-                  title="Total Earnings"
-                  value={stats.totalEarnings}
-                  prefix={<Wallet size={20} color="#52c41a" />}
-                  formatter={(value) => `₹${value.toLocaleString()}`}
-                />
-              </Card>
-            </Col>
+            {canSeePrivateData && (
+              <Col xs={12} sm={6}>
+                <Card className="stat-card earnings">
+                  <Statistic
+                    title="Total Earnings"
+                    value={stats.totalEarnings}
+                    prefix={<Wallet size={20} color="#52c41a" />}
+                    formatter={(value) => `₹${value.toLocaleString()}`}
+                  />
+                </Card>
+              </Col>
+            )}
             <Col xs={12} sm={6}>
               <Card className="stat-card">
                 <Statistic
@@ -562,6 +708,357 @@ const TrainerConsultationPage = () => {
     }
   ];
 
+  // ─── CUSTOMER-FACING VIEW ───
+  if (!canSeePrivateData) {
+    return (
+      <div className="trainer-consultation-page">
+        <div className="trainer-dashboard-container">
+          {/* Back Button */}
+          <Button
+            type="text"
+            icon={<ArrowLeft size={20} />}
+            onClick={() => navigate(-1)}
+            className="back-btn"
+            style={{ marginBottom: 16, color: '#1b4332' }}
+          />
+
+          {/* Hero Profile Card */}
+          <div className="tc-hero-card">
+            <div className="tc-hero-gradient" />
+            <div className="tc-hero-content">
+              <div className="tc-hero-left">
+                <Avatar size={110} src={trainer.image} className="tc-hero-avatar" />
+                <div className="tc-hero-info">
+                  <div className="tc-hero-name-row">
+                    <Title level={2} style={{ margin: 0, color: '#1b4332' }}>{trainer.name}</Title>
+                    {trainer.isTopRated && (
+                      <Tag color="gold" style={{ borderRadius: 20, fontWeight: 600, fontSize: 12 }}>
+                        <Sparkles size={12} /> Top Rated
+                      </Tag>
+                    )}
+                  </div>
+                  <Tag color={getCategoryColor(trainer.category)} style={{ borderRadius: 20, fontSize: 13, padding: '2px 14px', marginTop: 4 }}>
+                    {getCategoryLabel(trainer.category)}
+                  </Tag>
+                  <Text style={{ fontSize: 15, color: '#555', marginTop: 4, display: 'block' }}>
+                    {trainer.specialization}
+                  </Text>
+                </div>
+              </div>
+              <div className="tc-hero-actions">
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<CalendarIcon size={18} />}
+                  className="tc-book-btn"
+                  onClick={() => navigate(`/book/${trainerId}`)}
+                >
+                  Book Consultation
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <Row gutter={[16, 16]} style={{ marginBottom: 28 }}>
+            <Col xs={12} sm={6}>
+              <div className="tc-quick-stat">
+                <div className="tc-qs-icon" style={{ background: 'linear-gradient(135deg, #fff7e6, #ffe0b2)' }}>
+                  <Star size={22} fill="#faad14" color="#faad14" />
+                </div>
+                <div>
+                  <Text className="tc-qs-value">{trainer.rating}</Text>
+                  <Text className="tc-qs-label">Rating</Text>
+                </div>
+              </div>
+            </Col>
+            <Col xs={12} sm={6}>
+              <div className="tc-quick-stat">
+                <div className="tc-qs-icon" style={{ background: 'linear-gradient(135deg, #e6f7ff, #b3e0ff)' }}>
+                  <MessageSquare size={22} color="#1890ff" />
+                </div>
+                <div>
+                  <Text className="tc-qs-value">{reviewStats.total}</Text>
+                  <Text className="tc-qs-label">Reviews</Text>
+                </div>
+              </div>
+            </Col>
+            <Col xs={12} sm={6}>
+              <div className="tc-quick-stat">
+                <div className="tc-qs-icon" style={{ background: 'linear-gradient(135deg, #f0fdf4, #bbf7d0)' }}>
+                  <Briefcase size={22} color="#2d6a4f" />
+                </div>
+                <div>
+                  <Text className="tc-qs-value">{trainer.experience}+</Text>
+                  <Text className="tc-qs-label">Years Exp</Text>
+                </div>
+              </div>
+            </Col>
+            <Col xs={12} sm={6}>
+              <div className="tc-quick-stat">
+                <div className="tc-qs-icon" style={{ background: 'linear-gradient(135deg, #faf5ff, #e9d5ff)' }}>
+                  <IndianRupee size={22} color="#7c3aed" />
+                </div>
+                <div>
+                  <Text className="tc-qs-value">{trainer.price?.toLocaleString()}</Text>
+                  <Text className="tc-qs-label">Per Session</Text>
+                </div>
+              </div>
+            </Col>
+          </Row>
+
+          <Row gutter={[24, 24]}>
+            {/* LEFT Column */}
+            <Col xs={24} lg={16}>
+              {/* About Section */}
+              <Card className="tc-section-card" style={{ marginBottom: 24 }}>
+                <div className="tc-section-header">
+                  <GraduationCap size={22} color="#2d6a4f" />
+                  <Title level={4} style={{ margin: 0, color: '#1b4332' }}>About the Trainer</Title>
+                </div>
+                <Paragraph style={{ fontSize: 15, lineHeight: 1.8, color: '#444', margin: 0 }}>
+                  {trainer.name} is an experienced {getCategoryLabel(trainer.category)?.toLowerCase()} with {trainer.experience}+ years of expertise in {trainer.specialization?.toLowerCase() || 'health and wellness'}.
+                  Dedicated to helping clients achieve their fitness goals through personalized plans, evidence-based methods, and consistent guidance.
+                  Known for a supportive coaching style that motivates clients to push beyond their limits while maintaining safety and proper form.
+                </Paragraph>
+                <Divider style={{ margin: '16px 0' }} />
+                <Row gutter={[16, 12]}>
+                  <Col xs={24} sm={8}>
+                    <div className="tc-detail-item">
+                      <Globe size={16} color="#1890ff" />
+                      <div>
+                        <Text type="secondary" style={{ fontSize: 12 }}>Languages</Text>
+                        <Text strong style={{ display: 'block', fontSize: 13 }}>Hindi, English</Text>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col xs={24} sm={8}>
+                    <div className="tc-detail-item">
+                      <Video size={16} color="#52c41a" />
+                      <div>
+                        <Text type="secondary" style={{ fontSize: 12 }}>Session Mode</Text>
+                        <Text strong style={{ display: 'block', fontSize: 13 }}>Video & In-Person</Text>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col xs={24} sm={8}>
+                    <div className="tc-detail-item">
+                      <Clock size={16} color="#faad14" />
+                      <div>
+                        <Text type="secondary" style={{ fontSize: 12 }}>Session Duration</Text>
+                        <Text strong style={{ display: 'block', fontSize: 13 }}>30 - 60 min</Text>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+              </Card>
+
+              {/* Reviews Section */}
+              <Card className="tc-section-card" style={{ marginBottom: 24 }}>
+                <div className="tc-section-header">
+                  <Star size={22} color="#faad14" fill="#faad14" />
+                  <Title level={4} style={{ margin: 0, color: '#1b4332' }}>Reviews & Ratings</Title>
+                </div>
+
+                {/* Rating Summary */}
+                <div className="tc-rating-summary">
+                  <div className="tc-rating-big">
+                    <Text className="tc-rating-number">{reviewStats.avg}</Text>
+                    <Rate disabled value={parseFloat(reviewStats.avg)} allowHalf style={{ fontSize: 18 }} />
+                    <Text type="secondary" style={{ fontSize: 13 }}>{reviewStats.total} reviews</Text>
+                  </div>
+                  <div className="tc-rating-bars">
+                    {reviewStats.dist.map(d => (
+                      <div key={d.star} className="tc-rating-bar-row">
+                        <Text style={{ width: 18, fontSize: 13 }}>{d.star}</Text>
+                        <Star size={13} fill="#faad14" color="#faad14" />
+                        <div className="tc-bar-track">
+                          <div className="tc-bar-fill" style={{ width: `${d.pct}%` }} />
+                        </div>
+                        <Text type="secondary" style={{ width: 30, textAlign: 'right', fontSize: 12 }}>{d.count}</Text>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Divider />
+
+                {/* Write Review */}
+                <div className="tc-write-review">
+                  <Title level={5} style={{ color: '#1b4332', margin: '0 0 12px 0' }}>
+                    <Edit3 size={16} style={{ marginRight: 8 }} />
+                    Write a Review
+                  </Title>
+                  <div className="tc-review-form">
+                    <div className="tc-review-rating-select">
+                      <Text style={{ marginRight: 8, fontSize: 14 }}>Your Rating:</Text>
+                      <Rate value={reviewRating} onChange={setReviewRating} style={{ fontSize: 22 }} />
+                    </div>
+                    <TextArea
+                      rows={3}
+                      placeholder="Share your experience with this trainer..."
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                      maxLength={500}
+                      showCount
+                      style={{ borderRadius: 12, fontSize: 14 }}
+                    />
+                    <Button
+                      type="primary"
+                      icon={<Send size={16} />}
+                      onClick={handleSubmitReview}
+                      style={{
+                        background: '#2d6a4f',
+                        borderColor: '#2d6a4f',
+                        borderRadius: 10,
+                        height: 42,
+                        fontWeight: 600,
+                        marginTop: 8
+                      }}
+                    >
+                      Submit Review
+                    </Button>
+                  </div>
+                </div>
+
+                <Divider />
+
+                {/* Review List */}
+                <div className="tc-review-list">
+                  {reviews.map(review => (
+                    <div key={review.id} className="tc-review-item">
+                      <div className="tc-review-header">
+                        <Avatar src={review.avatar} size={44} />
+                        <div className="tc-review-meta">
+                          <Text strong style={{ fontSize: 15 }}>{review.name}</Text>
+                          <div className="tc-review-meta-row">
+                            <Rate disabled value={review.rating} style={{ fontSize: 13 }} />
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                              {dayjs(review.date).format('MMM D, YYYY')}
+                            </Text>
+                          </div>
+                        </div>
+                      </div>
+                      <Paragraph style={{ margin: '10px 0 8px', fontSize: 14, color: '#444', lineHeight: 1.7 }}>
+                        {review.comment}
+                      </Paragraph>
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<ThumbsUp size={14} color={helpfulIds.includes(review.id) ? '#2d6a4f' : '#999'} />}
+                        onClick={() => handleHelpful(review.id)}
+                        style={{ color: helpfulIds.includes(review.id) ? '#2d6a4f' : '#999', fontSize: 12, padding: '0 8px' }}
+                      >
+                        Helpful ({review.helpful})
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </Col>
+
+            {/* RIGHT Column - Sidebar */}
+            <Col xs={24} lg={8}>
+              {/* Upcoming Slots */}
+              <Card className="tc-section-card tc-sidebar-card" style={{ marginBottom: 20 }}>
+                <div className="tc-section-header">
+                  <CalendarIcon size={22} color="#1890ff" />
+                  <Title level={5} style={{ margin: 0, color: '#1b4332' }}>Available Slots</Title>
+                </div>
+                <div className="tc-slots-list">
+                  {upcomingSlots.map((slot, idx) => (
+                    <div key={idx} className="tc-slot-day">
+                      <div className="tc-slot-date">
+                        <CalendarIcon size={14} color="#2d6a4f" />
+                        <Text strong style={{ fontSize: 13, color: '#1b4332' }}>{slot.dayLabel}</Text>
+                      </div>
+                      <div className="tc-slot-times">
+                        {slot.times.map((time, ti) => (
+                          <Tag
+                            key={ti}
+                            className="tc-slot-tag"
+                            onClick={() => navigate(`/book/${trainerId}`)}
+                          >
+                            <Clock size={11} /> {time}
+                          </Tag>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  type="primary"
+                  block
+                  icon={<CalendarIcon size={16} />}
+                  style={{
+                    background: '#2d6a4f',
+                    borderColor: '#2d6a4f',
+                    borderRadius: 10,
+                    height: 42,
+                    fontWeight: 600,
+                    marginTop: 12
+                  }}
+                  onClick={() => navigate(`/book/${trainerId}`)}
+                >
+                  Book a Slot
+                </Button>
+              </Card>
+
+              {/* Specializations */}
+              <Card className="tc-section-card tc-sidebar-card" style={{ marginBottom: 20 }}>
+                <div className="tc-section-header">
+                  <Zap size={20} color="#faad14" />
+                  <Title level={5} style={{ margin: 0, color: '#1b4332' }}>Specializations</Title>
+                </div>
+                <div className="tc-spec-tags">
+                  {(trainer.specialization || 'Fitness,Wellness').split(',').map((s, i) => (
+                    <Tag key={i} className="tc-spec-tag">
+                      {s.trim()}
+                    </Tag>
+                  ))}
+                  <Tag className="tc-spec-tag">{getCategoryLabel(trainer.category)}</Tag>
+                  <Tag className="tc-spec-tag">Weight Management</Tag>
+                  <Tag className="tc-spec-tag">Lifestyle Coaching</Tag>
+                </div>
+              </Card>
+
+              {/* Quick Contact */}
+              <Card className="tc-section-card tc-sidebar-card">
+                <div className="tc-section-header">
+                  <Heart size={20} color="#ff4d6a" />
+                  <Title level={5} style={{ margin: 0, color: '#1b4332' }}>Why Choose {trainer.name?.split(' ')[0]}?</Title>
+                </div>
+                <div className="tc-why-list">
+                  <div className="tc-why-item">
+                    <CheckCircle size={16} color="#52c41a" />
+                    <Text style={{ fontSize: 13 }}>Personalized workout & diet plans</Text>
+                  </div>
+                  <div className="tc-why-item">
+                    <CheckCircle size={16} color="#52c41a" />
+                    <Text style={{ fontSize: 13 }}>Regular progress tracking</Text>
+                  </div>
+                  <div className="tc-why-item">
+                    <CheckCircle size={16} color="#52c41a" />
+                    <Text style={{ fontSize: 13 }}>Video & in-person sessions available</Text>
+                  </div>
+                  <div className="tc-why-item">
+                    <CheckCircle size={16} color="#52c41a" />
+                    <Text style={{ fontSize: 13 }}>Flexible scheduling</Text>
+                  </div>
+                  <div className="tc-why-item">
+                    <CheckCircle size={16} color="#52c41a" />
+                    <Text style={{ fontSize: 13 }}>{trainer.experience}+ years of experience</Text>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── OWNER / ADMIN DASHBOARD VIEW ───
   return (
     <div className="trainer-consultation-page">
       <div className="trainer-dashboard-container">
@@ -649,6 +1146,106 @@ const TrainerConsultationPage = () => {
             </Col>
           </Row>
         </Card>
+
+        {/* Admin Controls for Registered Trainers */}
+        {adminLoggedIn && trainer.isRegistered && (() => {
+          const rawTrainer = registeredTrainers.find(t => `reg_${t.id}` === trainer.id);
+          if (!rawTrainer) return null;
+          return (
+            <Card
+              size="small"
+              style={{
+                marginBottom: 20,
+                borderRadius: 16,
+                background: rawTrainer.status === 'verified' ? '#f6ffed' : '#fff7e6',
+                border: `1px solid ${rawTrainer.status === 'verified' ? '#b7eb8f' : '#ffd591'}`
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                <Space>
+                  <ShieldCheck size={18} color="#cf1322" />
+                  <Text strong>Admin Controls</Text>
+                  <Tag color={rawTrainer.status === 'verified' ? 'green' : rawTrainer.status === 'rejected' ? 'red' : 'orange'}>
+                    {rawTrainer.status === 'verified' ? 'Verified' : rawTrainer.status === 'rejected' ? 'Rejected' : 'Pending'}
+                  </Tag>
+                </Space>
+                <Space>
+                  {rawTrainer.status !== 'verified' && (
+                    <Button
+                      type="primary"
+                      size="small"
+                      icon={<CheckCircle size={14} />}
+                      style={{ background: '#2d6a4f', borderColor: '#2d6a4f' }}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: 'Approve Trainer',
+                          content: `Are you sure you want to verify "${trainer.name}"?`,
+                          okText: 'Yes, Approve',
+                          okButtonProps: { style: { background: '#2d6a4f', borderColor: '#2d6a4f' } },
+                          onOk: () => {
+                            verifyTrainer(rawTrainer.id);
+                            message.success(`${trainer.name} has been verified!`);
+                          }
+                        });
+                      }}
+                    >
+                      Approve
+                    </Button>
+                  )}
+                  {rawTrainer.status !== 'rejected' && rawTrainer.status !== 'verified' && (
+                    <Button
+                      size="small"
+                      danger
+                      icon={<XCircle size={14} />}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: 'Reject Trainer',
+                          content: `Are you sure you want to reject "${trainer.name}"?`,
+                          okText: 'Yes, Reject',
+                          okButtonProps: { danger: true },
+                          onOk: () => {
+                            rejectTrainer(rawTrainer.id, 'Rejected by admin from profile page');
+                            message.success(`${trainer.name} has been rejected`);
+                          }
+                        });
+                      }}
+                    >
+                      Reject
+                    </Button>
+                  )}
+                  {rawTrainer.status === 'verified' && (
+                    <Button
+                      size="small"
+                      danger
+                      icon={<XCircle size={14} />}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: 'Revoke Verification',
+                          content: `Are you sure you want to revoke verification for "${trainer.name}"?`,
+                          okText: 'Yes, Revoke',
+                          okButtonProps: { danger: true },
+                          onOk: () => {
+                            rejectTrainer(rawTrainer.id, 'Verification revoked by admin');
+                            message.success(`${trainer.name}'s verification has been revoked`);
+                          }
+                        });
+                      }}
+                    >
+                      Revoke
+                    </Button>
+                  )}
+                  <Button
+                    size="small"
+                    icon={<ArrowLeft size={14} />}
+                    onClick={() => navigate('/admin')}
+                  >
+                    Back to Admin
+                  </Button>
+                </Space>
+              </div>
+            </Card>
+          );
+        })()}
 
         {/* Tabs */}
         <Tabs

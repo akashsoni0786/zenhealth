@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Card,
   Row,
@@ -18,6 +18,9 @@ import {
   Timeline,
   Space,
   Divider,
+  Select,
+  InputNumber,
+  Switch,
   message
 } from 'antd';
 import {
@@ -40,9 +43,17 @@ import {
   MapPin,
   RotateCcw,
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  Star,
+  EyeOff,
+  Edit3,
+  Undo2,
+  ImageIcon,
+  Landmark,
+  CreditCard
 } from 'lucide-react';
 import { useTrainerAuth } from '../context/TrainerAuthContext';
+import { TRAINER_DATA, getCategoryColor, getCategoryLabel } from '../data/trainerData';
 import './AdminDashboard.css';
 
 const { Title, Text } = Typography;
@@ -66,6 +77,7 @@ const STATUS_LABELS = {
 };
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const {
     registeredTrainers,
     adminLoggedIn,
@@ -73,19 +85,33 @@ const AdminDashboard = () => {
     adminLogout,
     verifyTrainer,
     rejectTrainer,
-    requestResubmission
+    requestResubmission,
+    verifyBankDetails,
+    rejectBankDetails,
+    hiddenTrainers,
+    hideTrainer,
+    restoreTrainer,
+    updateRegisteredTrainer,
+    trainerEdits,
+    updateStaticTrainer,
+    resetStaticTrainer
   } = useTrainerAuth();
 
   // ─── Local State ───
   const [loginForm] = Form.useForm();
+  const [editForm] = Form.useForm();
   const [loginLoading, setLoginLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [resubmitModalOpen, setResubmitModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingTrainer, setEditingTrainer] = useState(null);
   const [selectedTrainer, setSelectedTrainer] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [resubmitRemarks, setResubmitRemarks] = useState('');
+  const [bankRejectModalOpen, setBankRejectModalOpen] = useState(false);
+  const [bankRejectReason, setBankRejectReason] = useState('');
 
   // ─── Stats ───
   const stats = useMemo(() => {
@@ -182,6 +208,90 @@ const AdminDashboard = () => {
   const openDetailModal = (trainer) => {
     setSelectedTrainer(trainer);
     setDetailModalOpen(true);
+  };
+
+  // ─── Open Edit Modal for Static or Registered Trainer ───
+  const openEditModal = (trainer, isRegistered = false) => {
+    if (isRegistered) {
+      const profile = trainer.profile || {};
+      setEditingTrainer({ ...trainer, _isRegistered: true });
+      editForm.setFieldsValue({
+        name: trainer.name,
+        specialization: profile.specialization || '',
+        experience: profile.experience ? Number(profile.experience) : undefined,
+        price: profile.consultationFee ? Number(profile.consultationFee) : undefined,
+        rating: 4.5,
+        bio: profile.bio || '',
+        category: trainer.category,
+        reviewCount: 0,
+        availability: 'available',
+        image: profile.photoUrl || '',
+        isTopRated: false,
+        certifications: (profile.certifications || []).join(', '),
+        phone: trainer.phone || profile.phone || '',
+        location: profile.location || '',
+        qualification: profile.qualification || ''
+      });
+    } else {
+      const edits = trainerEdits[trainer.id] || {};
+      const merged = { ...trainer, ...edits };
+      setEditingTrainer({ ...trainer, _isRegistered: false });
+      editForm.setFieldsValue({
+        name: merged.name,
+        specialization: merged.specialization,
+        experience: merged.experience,
+        price: merged.price,
+        rating: merged.rating,
+        bio: merged.bio,
+        category: merged.category,
+        reviewCount: merged.reviewCount,
+        availability: merged.availability,
+        image: merged.image,
+        isTopRated: merged.isTopRated,
+        certifications: (merged.certifications || []).join(', ')
+      });
+    }
+    setEditModalOpen(true);
+  };
+
+  // ─── Save Edit ───
+  const handleEditSave = () => {
+    editForm.validateFields().then(values => {
+      const saveData = { ...values };
+      // Convert certifications string to array
+      if (typeof saveData.certifications === 'string') {
+        saveData.certifications = saveData.certifications
+          .split(',')
+          .map(c => c.trim())
+          .filter(Boolean);
+      }
+
+      if (editingTrainer._isRegistered) {
+        // Save registered trainer edits
+        updateRegisteredTrainer(editingTrainer.id, {
+          name: saveData.name,
+          category: saveData.category,
+          phone: saveData.phone,
+          profile: {
+            name: saveData.name,
+            specialization: saveData.specialization,
+            experience: saveData.experience,
+            consultationFee: saveData.price,
+            bio: saveData.bio,
+            photoUrl: saveData.image,
+            certifications: saveData.certifications,
+            location: saveData.location,
+            qualification: saveData.qualification,
+            phone: saveData.phone
+          }
+        });
+      } else {
+        updateStaticTrainer(editingTrainer.id, saveData);
+      }
+      message.success(`${values.name || editingTrainer.name} updated successfully!`);
+      setEditModalOpen(false);
+      setEditingTrainer(null);
+    });
   };
 
   // ─── Format Date ───
@@ -299,10 +409,16 @@ const AdminDashboard = () => {
   const renderTrainerCard = (trainer) => {
     const initials = (trainer.name || 'T').charAt(0).toUpperCase();
     const profile = trainer.profile || {};
+    const isRegHidden = hiddenTrainers.includes(`reg_${trainer.id}`);
 
     return (
       <Col xs={24} md={12} lg={8} key={trainer.id}>
-        <Card className="trainer-app-card">
+        <Card className="trainer-app-card" style={isRegHidden ? { opacity: 0.5, background: '#fafafa' } : {}}>
+          {isRegHidden && (
+            <div style={{ background: '#ff4d4f', color: '#fff', textAlign: 'center', padding: '2px 0', borderRadius: '8px 8px 0 0', fontSize: 11, fontWeight: 600, marginBottom: 8 }}>
+              REMOVED FROM PLATFORM
+            </div>
+          )}
           {/* Header: Avatar + Name + Status */}
           <div className="trainer-app-header">
             {profile.profilePhoto ? (
@@ -319,6 +435,11 @@ const AdminDashboard = () => {
                 </Tag>
                 {trainer.category && (
                   <Tag color="purple">{trainer.category}</Tag>
+                )}
+                {trainer.bankStatus && trainer.bankStatus !== 'not_submitted' && (
+                  <Tag color={trainer.bankStatus === 'verified' ? 'green' : trainer.bankStatus === 'rejected' ? 'red' : 'blue'}>
+                    {trainer.bankStatus === 'verified' ? '🏦 Bank ✓' : trainer.bankStatus === 'rejected' ? '🏦 Bank ✗' : '🏦 Bank Pending'}
+                  </Tag>
                 )}
               </div>
             </div>
@@ -393,6 +514,20 @@ const AdminDashboard = () => {
             >
               Details
             </Button>
+            <Button
+              size="small"
+              icon={<ExternalLink size={14} />}
+              onClick={() => navigate(`/trainer-dashboard/reg_${trainer.id}`)}
+            >
+              View Profile
+            </Button>
+            <Button
+              size="small"
+              icon={<Edit3 size={14} />}
+              onClick={() => openEditModal(trainer, true)}
+            >
+              Edit
+            </Button>
 
             {(trainer.status === 'pending' || trainer.status === 'pending_review' || trainer.status === 'resubmit') && (
               <>
@@ -433,6 +568,42 @@ const AdminDashboard = () => {
                 onClick={() => handleApprove(trainer)}
               >
                 Re-verify
+              </Button>
+            )}
+
+            {/* Remove / Restore registered trainer */}
+            {hiddenTrainers.includes(`reg_${trainer.id}`) ? (
+              <Button
+                size="small"
+                type="primary"
+                icon={<RotateCcw size={14} />}
+                style={{ background: '#2d6a4f', borderColor: '#2d6a4f' }}
+                onClick={() => {
+                  restoreTrainer(`reg_${trainer.id}`);
+                  message.success(`${trainer.name} restored to platform`);
+                }}
+              >
+                Restore
+              </Button>
+            ) : (
+              <Button
+                size="small"
+                danger
+                icon={<EyeOff size={14} />}
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'Remove from Platform',
+                    content: `Are you sure you want to remove "${trainer.name}" from the platform? They will no longer appear in search results.`,
+                    okText: 'Yes, Remove',
+                    okButtonProps: { danger: true },
+                    onOk: () => {
+                      hideTrainer(`reg_${trainer.id}`);
+                      message.success(`${trainer.name} has been removed from the platform`);
+                    }
+                  });
+                }}
+              >
+                Remove
               </Button>
             )}
           </div>
@@ -526,6 +697,136 @@ const AdminDashboard = () => {
             />
           </div>
         )}
+
+        {/* ─── Platform Trainers (Static/Dummy Data) ─── */}
+        <Divider style={{ margin: '32px 0 16px' }} />
+        <div className="admin-dashboard-header" style={{ marginBottom: 16 }}>
+          <div className="admin-header-left">
+            <Title level={4} style={{ margin: 0 }}>Platform Trainers</Title>
+            <Text type="secondary">Pre-listed trainers on the platform ({TRAINER_DATA.length} total{hiddenTrainers.length > 0 ? `, ${hiddenTrainers.length} hidden` : ''})</Text>
+          </div>
+        </div>
+        <Row gutter={[16, 16]}>
+          {TRAINER_DATA.map(trainer => {
+            const isHidden = hiddenTrainers.includes(trainer.id);
+            const edits = trainerEdits[trainer.id] || {};
+            const isEdited = Object.keys(edits).length > 0;
+            const t = { ...trainer, ...edits };
+            return (
+              <Col xs={24} md={12} lg={8} key={`static-${trainer.id}`}>
+                <Card className="trainer-app-card" style={isHidden ? { opacity: 0.5, background: '#fafafa' } : {}}>
+                  {isHidden && (
+                    <Tag color="red" style={{ position: 'absolute', top: 12, right: 12, zIndex: 1 }}>
+                      <EyeOff size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                      Hidden
+                    </Tag>
+                  )}
+                  {!isHidden && isEdited && (
+                    <Tag color="blue" style={{ position: 'absolute', top: 12, right: 12, zIndex: 1 }}>
+                      <Edit3 size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                      Edited
+                    </Tag>
+                  )}
+                  <div className="trainer-app-header">
+                    <img
+                      src={t.image}
+                      alt={t.name}
+                      className="trainer-app-avatar"
+                      style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover' }}
+                    />
+                    <div className="trainer-app-name-block">
+                      <Title level={5}>{t.name}</Title>
+                      <div className="trainer-app-tags">
+                        <Tag color={isHidden ? 'default' : 'green'}>{isHidden ? 'Removed' : 'Platform Verified'}</Tag>
+                        <Tag color={getCategoryColor(t.category)}>{getCategoryLabel(t.category)}</Tag>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="trainer-app-details">
+                    <div className="trainer-app-detail-row">
+                      <Award size={14} />
+                      <span>{t.specialization}</span>
+                    </div>
+                    <div className="trainer-app-detail-row">
+                      <Briefcase size={14} />
+                      <span>{t.experience} years experience</span>
+                    </div>
+                    <div className="trainer-app-detail-row">
+                      <IndianRupee size={14} />
+                      <span>&#8377;{t.price.toLocaleString()} / session</span>
+                    </div>
+                    <div className="trainer-app-detail-row">
+                      <Star size={14} />
+                      <span>{t.rating} ({t.reviewCount} reviews)</span>
+                    </div>
+                  </div>
+                  <div className="trainer-app-actions">
+                    <Button
+                      size="small"
+                      icon={<Edit3 size={14} />}
+                      onClick={() => openEditModal(trainer)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="small"
+                      icon={<ExternalLink size={14} />}
+                      onClick={() => navigate(`/trainer-dashboard/${trainer.id}`)}
+                    >
+                      View Profile
+                    </Button>
+                    {isEdited && (
+                      <Button
+                        size="small"
+                        icon={<Undo2 size={14} />}
+                        onClick={() => {
+                          resetStaticTrainer(trainer.id);
+                          message.success(`${trainer.name} reset to original data`);
+                        }}
+                      >
+                        Reset
+                      </Button>
+                    )}
+                    {isHidden ? (
+                      <Button
+                        size="small"
+                        type="primary"
+                        icon={<RotateCcw size={14} />}
+                        style={{ background: '#2d6a4f', borderColor: '#2d6a4f' }}
+                        onClick={() => {
+                          restoreTrainer(trainer.id);
+                          message.success(`${trainer.name} restored to platform`);
+                        }}
+                      >
+                        Restore
+                      </Button>
+                    ) : (
+                      <Button
+                        size="small"
+                        danger
+                        icon={<EyeOff size={14} />}
+                        onClick={() => {
+                          Modal.confirm({
+                            title: 'Remove from Platform',
+                            content: `Are you sure you want to hide "${trainer.name}" from the platform? They will no longer appear on the home page or search results.`,
+                            okText: 'Yes, Remove',
+                            okButtonProps: { danger: true },
+                            onOk: () => {
+                              hideTrainer(trainer.id);
+                              message.success(`${trainer.name} has been removed from the platform`);
+                            }
+                          });
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
       </div>
 
       {/* ═══════════════════════════════════════════════════════
@@ -778,6 +1079,94 @@ const AdminDashboard = () => {
                 )}
               </Card>
 
+              {/* Bank Details */}
+              <Card
+                size="small"
+                title={
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>Bank Details</span>
+                    {selectedTrainer.bankStatus && selectedTrainer.bankStatus !== 'not_submitted' && (
+                      <Tag color={selectedTrainer.bankStatus === 'verified' ? 'green' : selectedTrainer.bankStatus === 'rejected' ? 'red' : 'orange'}>
+                        {selectedTrainer.bankStatus === 'verified' ? 'Verified' : selectedTrainer.bankStatus === 'rejected' ? 'Rejected' : 'Pending'}
+                      </Tag>
+                    )}
+                  </div>
+                }
+                className="detail-section-card"
+              >
+                {profile.bankDetails ? (
+                  <>
+                    <div className="detail-info-row">
+                      <User size={15} />
+                      <span className="detail-info-label">Account Holder</span>
+                      <span className="detail-info-value">{profile.bankDetails.accountHolder}</span>
+                    </div>
+                    <div className="detail-info-row">
+                      <Landmark size={15} />
+                      <span className="detail-info-label">Bank Name</span>
+                      <span className="detail-info-value">{profile.bankDetails.bankName}</span>
+                    </div>
+                    <div className="detail-info-row">
+                      <CreditCard size={15} />
+                      <span className="detail-info-label">Account Number</span>
+                      <span className="detail-info-value">{profile.bankDetails.accountNumber}</span>
+                    </div>
+                    <div className="detail-info-row">
+                      <CreditCard size={15} />
+                      <span className="detail-info-label">IFSC Code</span>
+                      <span className="detail-info-value">{profile.bankDetails.ifscCode}</span>
+                    </div>
+                    {profile.bankDetails.upiId && (
+                      <div className="detail-info-row">
+                        <IndianRupee size={15} />
+                        <span className="detail-info-label">UPI ID</span>
+                        <span className="detail-info-value">{profile.bankDetails.upiId}</span>
+                      </div>
+                    )}
+                    {selectedTrainer.bankRejectReason && (
+                      <Alert
+                        message="Bank Rejection Reason"
+                        description={selectedTrainer.bankRejectReason}
+                        type="error"
+                        showIcon
+                        icon={<XCircle size={16} />}
+                        style={{ borderRadius: 10, marginTop: 12 }}
+                      />
+                    )}
+                    {selectedTrainer.bankStatus !== 'verified' && (
+                      <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+                        <Button
+                          size="small"
+                          type="primary"
+                          icon={<CheckCircle size={14} />}
+                          style={{ background: '#52c41a', borderColor: '#52c41a' }}
+                          onClick={() => {
+                            verifyBankDetails(selectedTrainer.id);
+                            message.success('Bank details verified!');
+                            setDetailModalOpen(false);
+                          }}
+                        >
+                          Verify Bank
+                        </Button>
+                        <Button
+                          size="small"
+                          danger
+                          icon={<XCircle size={14} />}
+                          onClick={() => {
+                            setBankRejectReason('');
+                            setBankRejectModalOpen(true);
+                          }}
+                        >
+                          Reject Bank
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Text type="secondary">Bank details not submitted yet</Text>
+                )}
+              </Card>
+
               {/* Rejection / Resubmission Info */}
               {selectedTrainer.rejectionReason && (
                 <Alert
@@ -832,6 +1221,24 @@ const AdminDashboard = () => {
 
               {/* Action Buttons at Bottom */}
               <div className="detail-modal-actions">
+                <Button
+                  icon={<ExternalLink size={14} />}
+                  onClick={() => {
+                    setDetailModalOpen(false);
+                    navigate(`/trainer-dashboard/reg_${selectedTrainer.id}`);
+                  }}
+                >
+                  View Profile
+                </Button>
+                <Button
+                  icon={<Edit3 size={14} />}
+                  onClick={() => {
+                    setDetailModalOpen(false);
+                    openEditModal(selectedTrainer, true);
+                  }}
+                >
+                  Edit Profile
+                </Button>
                 {(selectedTrainer.status === 'pending' || selectedTrainer.status === 'pending_review' || selectedTrainer.status === 'resubmit') && (
                   <>
                     <Button
@@ -887,6 +1294,170 @@ const AdminDashboard = () => {
             </div>
           );
         })()}
+      </Modal>
+
+      {/* ═══════════════════════════════════════════════════════
+          EDIT TRAINER MODAL (Static + Registered)
+          ═══════════════════════════════════════════════════════ */}
+      <Modal
+        title={
+          <Space>
+            <Edit3 size={18} color="#2d6a4f" />
+            <span>Edit Trainer - {editingTrainer?.name}</span>
+          </Space>
+        }
+        open={editModalOpen}
+        onCancel={() => {
+          setEditModalOpen(false);
+          setEditingTrainer(null);
+          editForm.resetFields();
+        }}
+        onOk={handleEditSave}
+        okText="Save Changes"
+        okButtonProps={{ style: { background: '#2d6a4f', borderColor: '#2d6a4f' } }}
+        width={700}
+        className="admin-action-modal"
+      >
+        <Form form={editForm} layout="vertical" requiredMark={false}>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="name" label="Name" rules={[{ required: true, message: 'Name is required' }]}>
+                <Input prefix={<User size={14} />} placeholder="Trainer name" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="category" label="Category" rules={[{ required: true }]}>
+                <Select>
+                  <Select.Option value="yoga">Yoga</Select.Option>
+                  <Select.Option value="gym">Gym / Fitness</Select.Option>
+                  <Select.Option value="nutrition">Nutrition</Select.Option>
+                  <Select.Option value="doctor">Doctor</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Form.Item name="specialization" label="Specialization" rules={[{ required: true }]}>
+            <Input prefix={<Award size={14} />} placeholder="e.g. Hatha Yoga & Meditation" />
+          </Form.Item>
+          <Row gutter={16}>
+            <Col span={6}>
+              <Form.Item name="experience" label="Experience (yrs)" rules={[{ required: true }]}>
+                <InputNumber min={0} max={50} style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="price" label="Price (₹/session)" rules={[{ required: true }]}>
+                <InputNumber min={0} max={50000} style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="rating" label="Rating" rules={[{ required: true }]}>
+                <InputNumber min={0} max={5} step={0.1} style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="reviewCount" label="Reviews">
+                <InputNumber min={0} max={99999} style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="availability" label="Availability">
+                <Select>
+                  <Select.Option value="available">Available</Select.Option>
+                  <Select.Option value="busy">Busy</Select.Option>
+                  <Select.Option value="unavailable">Unavailable</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="isTopRated" label="Top Rated" valuePropName="checked">
+                <Switch checkedChildren="Yes" unCheckedChildren="No" />
+              </Form.Item>
+            </Col>
+          </Row>
+          {editingTrainer?._isRegistered && (
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item name="phone" label="Phone">
+                  <Input prefix={<Phone size={14} />} placeholder="Phone number" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="location" label="Location">
+                  <Input prefix={<MapPin size={14} />} placeholder="City, State" />
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
+          {editingTrainer?._isRegistered && (
+            <Form.Item name="qualification" label="Qualification">
+              <Input prefix={<Award size={14} />} placeholder="e.g. MBBS, MSc Nutrition" />
+            </Form.Item>
+          )}
+          <Form.Item name="image" label="Photo URL">
+            <Input prefix={<ImageIcon size={14} />} placeholder="https://images.unsplash.com/..." />
+          </Form.Item>
+          <Form.Item name="certifications" label="Certifications (comma separated)">
+            <Input prefix={<Award size={14} />} placeholder="e.g. RYT-500, Meditation Coach" />
+          </Form.Item>
+          <Form.Item name="bio" label="Bio">
+            <Input.TextArea rows={3} placeholder="Short bio about the trainer..." maxLength={300} showCount />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* ═══════════════════════════════════════════════════════
+          BANK REJECT MODAL
+          ═══════════════════════════════════════════════════════ */}
+      <Modal
+        title={
+          <Space>
+            <XCircle size={18} color="#f5222d" />
+            <span>Reject Bank Details</span>
+          </Space>
+        }
+        open={bankRejectModalOpen}
+        onCancel={() => {
+          setBankRejectModalOpen(false);
+          setBankRejectReason('');
+        }}
+        onOk={() => {
+          if (!bankRejectReason.trim()) {
+            message.warning('Please provide a reason for rejecting bank details');
+            return;
+          }
+          rejectBankDetails(selectedTrainer.id, bankRejectReason.trim());
+          message.success('Bank details rejected');
+          setBankRejectModalOpen(false);
+          setBankRejectReason('');
+          setDetailModalOpen(false);
+        }}
+        okText="Confirm Reject"
+        okButtonProps={{ danger: true }}
+        className="admin-action-modal"
+      >
+        {selectedTrainer && (
+          <>
+            <Text>
+              Rejecting bank details for <Text strong>{selectedTrainer.name}</Text>
+            </Text>
+            <div style={{ marginTop: 16 }}>
+              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                Reason for rejection <Text type="danger">*</Text>
+              </Text>
+              <TextArea
+                rows={3}
+                placeholder="Explain why the bank details are being rejected..."
+                value={bankRejectReason}
+                onChange={(e) => setBankRejectReason(e.target.value)}
+                maxLength={300}
+                showCount
+              />
+            </div>
+          </>
+        )}
       </Modal>
     </div>
   );

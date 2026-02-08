@@ -41,9 +41,13 @@ import {
   Upload,
   Eye,
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  Landmark,
+  CreditCard,
+  Hash
 } from 'lucide-react';
 import { useTrainerAuth } from '../context/TrainerAuthContext';
+import { trainerAPI } from '../utils/api';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -87,6 +91,7 @@ const TrainerProfileSetup = () => {
   useEffect(() => {
     if (currentTrainer?.profile) {
       const p = currentTrainer.profile;
+      const bank = p.bankDetails || {};
       form.setFieldsValue({
         name: p.name || currentTrainer.name || '',
         email: currentTrainer.email || '',
@@ -103,7 +108,13 @@ const TrainerProfileSetup = () => {
         consultationFee: p.consultationFee || undefined,
         workingHours: p.workingHours || '',
         consultationTypes: p.consultationTypes || [],
-        bio: p.bio || ''
+        bio: p.bio || '',
+        accountHolder: bank.accountHolder || '',
+        bankName: bank.bankName || '',
+        accountNumber: bank.accountNumber || '',
+        confirmAccountNumber: bank.accountNumber || '',
+        ifscCode: bank.ifscCode || '',
+        upiId: bank.upiId || ''
       });
       if (p.certifications) setCertifications(p.certifications);
       if (currentTrainer.documents) {
@@ -162,7 +173,9 @@ const TrainerProfileSetup = () => {
     if (url && url.trim()) {
       setDocumentUrls(prev => ({ ...prev, idProof: url.trim() }));
       setIdProofUploaded(true);
-      message.success('ID proof uploaded successfully (simulated)');
+      message.success('ID proof uploaded successfully');
+      // Sync to backend
+      trainerAPI.uploadDocument({ docType: 'idProof', name: 'ID Proof', url: url.trim() }).catch(() => {});
     } else {
       message.error('Please enter a valid URL for the ID proof');
     }
@@ -177,6 +190,8 @@ const TrainerProfileSetup = () => {
       }));
       setCertDocInput('');
       message.success('Certificate document added');
+      // Sync to backend
+      trainerAPI.uploadDocument({ docType: 'certificate', name: 'Certificate', url: trimmed }).catch(() => {});
     }
   };
 
@@ -197,7 +212,7 @@ const TrainerProfileSetup = () => {
       if (fieldsForStep.length > 0) {
         await form.validateFields(fieldsForStep);
       }
-      setCurrentStep(prev => Math.min(prev + 1, 5));
+      setCurrentStep(prev => Math.min(prev + 1, 6));
     } catch {
       message.error('Please fill in all required fields before proceeding');
     }
@@ -214,6 +229,7 @@ const TrainerProfileSetup = () => {
       case 2: return [];
       case 3: return ['location', 'consultationFee'];
       case 4: return ['bio'];
+      case 5: return ['accountHolder', 'bankName', 'accountNumber', 'confirmAccountNumber', 'ifscCode'];
       default: return [];
     }
   };
@@ -221,15 +237,45 @@ const TrainerProfileSetup = () => {
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
+      const bankDetails = {
+        accountHolder: values.accountHolder,
+        bankName: values.bankName,
+        accountNumber: values.accountNumber,
+        ifscCode: values.ifscCode,
+        upiId: values.upiId || ''
+      };
+      const { confirmAccountNumber, accountHolder, bankName, accountNumber, ifscCode, upiId, ...rest } = values;
       const profileData = {
-        ...values,
+        ...rest,
         certifications,
+        bankDetails,
         documents: {
           idProof: documentUrls.idProof,
           certificates: documentUrls.certificates
         }
       };
       updateTrainerProfile(profileData);
+      // Sync bank details to backend
+      trainerAPI.submitBankDetails({
+        accountHolderName: bankDetails.accountHolder,
+        accountNumber: bankDetails.accountNumber,
+        ifscCode: bankDetails.ifscCode,
+        bankName: bankDetails.bankName,
+        upiId: bankDetails.upiId
+      }).catch(() => {});
+      // Sync profile to backend
+      trainerAPI.updateProfile({
+        name: rest.name,
+        phone: rest.phone,
+        category: rest.category,
+        specialization: rest.specialization,
+        qualification: rest.qualification,
+        experience: rest.experience,
+        location: rest.location,
+        price: rest.consultationFee,
+        bio: rest.bio,
+        certifications
+      }).catch(() => {});
       message.success('Profile submitted for review successfully!');
     } catch {
       message.error('Please complete all required fields before submitting');
@@ -643,7 +689,109 @@ const TrainerProfileSetup = () => {
     </div>
   );
 
-  const renderStep5 = () => {
+  const renderStep5 = () => (
+    <div>
+      <Title level={4} style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Landmark size={20} /> Bank Details
+      </Title>
+      <Alert
+        message="Bank Details Required"
+        description="Please provide your bank details for receiving consultation payments. These details will be verified by the admin before your account goes live."
+        type="info"
+        showIcon
+        style={{ marginBottom: 24 }}
+      />
+      {currentTrainer.bankStatus === 'rejected' && currentTrainer.bankRejectReason && (
+        <Alert
+          message="Bank Details Rejected"
+          description={`Reason: ${currentTrainer.bankRejectReason}. Please update your bank details and resubmit.`}
+          type="error"
+          showIcon
+          style={{ marginBottom: 24 }}
+        />
+      )}
+      {currentTrainer.bankStatus === 'verified' && (
+        <Alert
+          message="Bank Details Verified"
+          description="Your bank details have been verified by the admin."
+          type="success"
+          showIcon
+          style={{ marginBottom: 24 }}
+        />
+      )}
+      <Row gutter={[16, 0]}>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="accountHolder"
+            label="Account Holder Name"
+            rules={[{ required: true, message: 'Please enter account holder name' }]}
+          >
+            <Input prefix={<User size={16} color="#999" />} placeholder="Name as per bank account" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="bankName"
+            label="Bank Name"
+            rules={[{ required: true, message: 'Please enter bank name' }]}
+          >
+            <Input prefix={<Landmark size={16} color="#999" />} placeholder="e.g., State Bank of India" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="accountNumber"
+            label="Account Number"
+            rules={[{ required: true, message: 'Please enter account number' }]}
+          >
+            <Input prefix={<CreditCard size={16} color="#999" />} placeholder="Enter account number" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="confirmAccountNumber"
+            label="Confirm Account Number"
+            dependencies={['accountNumber']}
+            rules={[
+              { required: true, message: 'Please confirm account number' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('accountNumber') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('Account numbers do not match'));
+                },
+              })
+            ]}
+          >
+            <Input prefix={<CreditCard size={16} color="#999" />} placeholder="Re-enter account number" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="ifscCode"
+            label="IFSC Code"
+            rules={[
+              { required: true, message: 'Please enter IFSC code' },
+              { pattern: /^[A-Z]{4}0[A-Z0-9]{6}$/, message: 'Please enter a valid IFSC code (e.g., SBIN0001234)' }
+            ]}
+          >
+            <Input prefix={<Hash size={16} color="#999" />} placeholder="e.g., SBIN0001234" style={{ textTransform: 'uppercase' }} />
+          </Form.Item>
+        </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item
+            name="upiId"
+            label="UPI ID (Optional)"
+          >
+            <Input prefix={<IndianRupee size={16} color="#999" />} placeholder="e.g., name@upi" />
+          </Form.Item>
+        </Col>
+      </Row>
+    </div>
+  );
+
+  const renderStep6 = () => {
     const values = form.getFieldsValue();
     const getCategoryLabel = (val) => CATEGORY_OPTIONS.find(c => c.value === val)?.label || val;
     const getGenderLabel = (val) => GENDER_OPTIONS.find(g => g.value === val)?.label || val;
@@ -749,6 +897,28 @@ const TrainerProfileSetup = () => {
             <Paragraph style={{ marginBottom: 0 }}>{values.bio}</Paragraph>
           </Card>
         )}
+
+        <Card
+          size="small"
+          title={<span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Landmark size={16} /> Bank Details</span>}
+          style={{ marginBottom: 16 }}
+        >
+          <Row gutter={[16, 8]}>
+            <Col span={12}><Text type="secondary">Account Holder:</Text> <Text strong>{values.accountHolder || '-'}</Text></Col>
+            <Col span={12}><Text type="secondary">Bank Name:</Text> <Text strong>{values.bankName || '-'}</Text></Col>
+            <Col span={12}><Text type="secondary">Account Number:</Text> <Text strong>{values.accountNumber ? `****${values.accountNumber.slice(-4)}` : '-'}</Text></Col>
+            <Col span={12}><Text type="secondary">IFSC Code:</Text> <Text strong>{values.ifscCode || '-'}</Text></Col>
+            {values.upiId && (
+              <Col span={12}><Text type="secondary">UPI ID:</Text> <Text strong>{values.upiId}</Text></Col>
+            )}
+            <Col span={24}>
+              <Text type="secondary">Verification:</Text>{' '}
+              <Tag color={currentTrainer.bankStatus === 'verified' ? 'green' : currentTrainer.bankStatus === 'rejected' ? 'red' : 'orange'}>
+                {currentTrainer.bankStatus === 'verified' ? 'Verified' : currentTrainer.bankStatus === 'rejected' ? 'Rejected' : 'Pending Admin Verification'}
+              </Tag>
+            </Col>
+          </Row>
+        </Card>
       </div>
     );
   };
@@ -759,6 +929,7 @@ const TrainerProfileSetup = () => {
     { title: 'Documents' },
     { title: 'Service' },
     { title: 'Bio' },
+    { title: 'Bank' },
     { title: 'Review' }
   ];
 
@@ -770,6 +941,7 @@ const TrainerProfileSetup = () => {
       case 3: return renderStep3();
       case 4: return renderStep4();
       case 5: return renderStep5();
+      case 6: return renderStep6();
       default: return null;
     }
   };
@@ -871,7 +1043,7 @@ const TrainerProfileSetup = () => {
             Previous
           </Button>
           <Space>
-            {currentStep < 5 && (
+            {currentStep < 6 && (
               <Button
                 type="primary"
                 onClick={handleNext}
@@ -879,7 +1051,7 @@ const TrainerProfileSetup = () => {
                 Next <ChevronRight size={16} style={{ marginLeft: 4 }} />
               </Button>
             )}
-            {currentStep === 5 && (
+            {currentStep === 6 && (
               <Button
                 type="primary"
                 icon={<Save size={16} />}

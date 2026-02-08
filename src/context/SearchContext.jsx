@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
-import { TRAINER_DATA } from '../data/trainerData';
+import { TRAINER_DATA, convertRegisteredTrainer } from '../data/trainerData';
+import { useTrainerAuth } from './TrainerAuthContext';
 
 const SearchContext = createContext();
 
@@ -17,9 +18,22 @@ const defaultFilters = {
 };
 
 export const SearchProvider = ({ children }) => {
+  const { registeredTrainers, hiddenTrainers, trainerEdits } = useTrainerAuth();
   const [filters, setFilters] = useState(defaultFilters);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Merge static trainers (with edits applied) + verified registered trainers (excluding hidden)
+  const allTrainers = useMemo(() => {
+    const visibleStatic = TRAINER_DATA
+      .filter(t => !hiddenTrainers.includes(t.id))
+      .map(t => trainerEdits[t.id] ? { ...t, ...trainerEdits[t.id] } : t);
+    const verifiedTrainers = registeredTrainers
+      .filter(t => t.status === 'verified')
+      .map(convertRegisteredTrainer)
+      .filter(t => !hiddenTrainers.includes(t.id));
+    return [...visibleStatic, ...verifiedTrainers];
+  }, [registeredTrainers, hiddenTrainers, trainerEdits]);
 
   // Update single filter
   const updateFilter = useCallback((key, value) => {
@@ -65,7 +79,7 @@ export const SearchProvider = ({ children }) => {
 
   // Filter and sort trainers
   const filteredTrainers = useMemo(() => {
-    let results = [...TRAINER_DATA];
+    let results = [...allTrainers];
 
     // Search query filter (name, specialization, bio)
     if (filters.searchQuery) {
@@ -133,25 +147,25 @@ export const SearchProvider = ({ children }) => {
     }
 
     return results;
-  }, [filters]);
+  }, [filters, allTrainers]);
 
   // Get price range from data
   const priceRange = useMemo(() => {
-    const prices = TRAINER_DATA.map(t => t.price);
+    const prices = allTrainers.map(t => t.price);
     return {
       min: Math.min(...prices),
       max: Math.max(...prices)
     };
-  }, []);
+  }, [allTrainers]);
 
   // Get experience range from data
   const experienceRange = useMemo(() => {
-    const experiences = TRAINER_DATA.map(t => t.experience);
+    const experiences = allTrainers.map(t => t.experience);
     return {
       min: Math.min(...experiences),
       max: Math.max(...experiences)
     };
-  }, []);
+  }, [allTrainers]);
 
   return (
     <SearchContext.Provider
@@ -163,6 +177,7 @@ export const SearchProvider = ({ children }) => {
         hasActiveFilters,
         activeFilterCount,
         filteredTrainers,
+        allTrainers,
         priceRange,
         experienceRange,
         isSearchOpen,

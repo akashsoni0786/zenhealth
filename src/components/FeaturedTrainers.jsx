@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { Star, Clock, ArrowRight, Award, TrendingUp } from 'lucide-react';
-import { TRAINER_DATA, getCategoryColor, getCategoryLabel } from '../data/trainerData';
+import { getCategoryColor, getCategoryLabel } from '../data/trainerData';
+import { useSearch } from '../context/SearchContext';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -14,9 +15,10 @@ const { Text, Title } = Typography;
 
 const FeaturedTrainers = () => {
   const navigate = useNavigate();
+  const { allTrainers } = useSearch();
 
   // Get top 5 rated trainers for swiper
-  const featuredTrainers = TRAINER_DATA
+  const featuredTrainers = allTrainers
     .filter(t => t.isTopRated)
     .sort((a, b) => b.rating - a.rating)
     .slice(0, 5);

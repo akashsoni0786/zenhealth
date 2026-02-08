@@ -1,26 +1,59 @@
-import React from 'react';
+import { useMemo } from 'react';
 import { Card, Row, Col, Typography, Avatar, Button, Space, Tag, Rate, Empty, Breadcrumb } from 'antd';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { EXPERT_DATA } from '../data/expertData';
+import { useTrainerAuth } from '../context/TrainerAuthContext';
 import { ArrowLeft, Briefcase, Award, Zap, Calendar } from 'lucide-react';
 
 const { Title, Text, Paragraph } = Typography;
 
+// Map trainer category to expert category
+const categoryToExpertType = {
+  yoga: 'yoga',
+  gym: 'gym',
+  nutrition: 'nutritionist',
+  doctor: 'doctor'
+};
+
 const ExpertListingPage = () => {
   const { type } = useParams();
   const navigate = useNavigate();
+  const { registeredTrainers } = useTrainerAuth();
+
+  // Convert verified registered trainers to expert format
+  const verifiedExperts = useMemo(() => {
+    return registeredTrainers
+      .filter(t => t.status === 'verified')
+      .map(t => {
+        const p = t.profile || {};
+        const expertType = categoryToExpertType[p.category || t.category] || t.category;
+        return {
+          id: `reg_${t.id}`,
+          name: p.name || t.name,
+          experience: p.experience ? `${p.experience} Years` : '1 Year',
+          expertise: p.specialization || p.qualification || 'General',
+          price: p.consultationFee ? Number(p.consultationFee).toLocaleString() : '1,000',
+          rating: 4.5,
+          image: p.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(t.name)}`,
+          category: expertType
+        };
+      });
+  }, [registeredTrainers]);
 
   // Get all experts or filter by type
   const getExperts = () => {
+    let staticExperts;
     if (type === 'all') {
-      // Combine all experts from all categories
-      return [
+      staticExperts = [
         ...EXPERT_DATA.yoga.map(e => ({ ...e, category: 'yoga' })),
         ...EXPERT_DATA.nutritionist.map(e => ({ ...e, category: 'nutritionist' })),
         ...EXPERT_DATA.gym.map(e => ({ ...e, category: 'gym' }))
       ];
+      return [...staticExperts, ...verifiedExperts];
     }
-    return (EXPERT_DATA[type] || []).map(e => ({ ...e, category: type }));
+    staticExperts = (EXPERT_DATA[type] || []).map(e => ({ ...e, category: type }));
+    const filteredVerified = verifiedExperts.filter(e => e.category === type);
+    return [...staticExperts, ...filteredVerified];
   };
 
   const experts = getExperts();
@@ -39,7 +72,8 @@ const ExpertListingPage = () => {
     const colors = {
       yoga: 'green',
       nutritionist: 'blue',
-      gym: 'purple'
+      gym: 'purple',
+      doctor: 'magenta'
     };
     return colors[category] || 'default';
   };
@@ -48,7 +82,8 @@ const ExpertListingPage = () => {
     const labels = {
       yoga: 'Yoga',
       nutritionist: 'Nutrition',
-      gym: 'Fitness'
+      gym: 'Fitness',
+      doctor: 'Doctor'
     };
     return labels[category] || category;
   };

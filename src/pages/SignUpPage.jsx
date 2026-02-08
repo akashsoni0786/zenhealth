@@ -19,38 +19,58 @@ const SignUpPage = () => {
   const [googleModalVisible, setGoogleModalVisible] = useState(false);
   const { signup } = useAuth();
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     setLoading(true);
-    // Simulate signup - in real app, this would call an API
-    setTimeout(() => {
+    try {
+      const result = await signup({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      });
+      if (result.error) {
+        message.error(result.error);
+      } else {
+        if (result.offline) {
+          message.success('Account created (offline mode). Welcome to StayFit!');
+        } else {
+          message.success('Account created successfully! Welcome to StayFit.');
+        }
+        navigate('/assessment');
+      }
+    } catch {
+      message.error('Something went wrong. Please try again.');
+    } finally {
       setLoading(false);
-      signup({ email: values.email, name: values.name });
-      message.success('Account created successfully! Welcome to StayFit.');
-      navigate('/assessment');
-    }, 1000);
+    }
   };
 
   const handleGoogleSignup = () => {
     setGoogleModalVisible(true);
   };
 
-  const selectGoogleAccount = (account) => {
+  const selectGoogleAccount = async (account) => {
     setGoogleModalVisible(false);
     setGoogleLoading(true);
 
-    // Simulate Google OAuth flow
-    setTimeout(() => {
-      setGoogleLoading(false);
-      signup({
+    try {
+      const result = await signup({
         id: account.id,
         email: account.email,
         name: account.name,
         avatar: account.avatar,
         provider: 'google'
       });
-      message.success(`Welcome to StayFit, ${account.name}!`);
-      navigate('/assessment');
-    }, 1500);
+      if (result.error) {
+        message.error(result.error);
+      } else {
+        message.success(`Welcome to StayFit, ${account.name}!`);
+        navigate('/assessment');
+      }
+    } catch {
+      message.error('Google signup failed. Please try again.');
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   return (

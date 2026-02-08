@@ -1,0 +1,491 @@
+/* ═══════════════════════════════════════════════
+   Settings Page — Premium UI
+   ═══════════════════════════════════════════════ */
+
+.settings-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+
+/* ─── Page Header with Gradient Banner ─── */
+.settings-header {
+  position: relative;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 40%, #40916c 100%);
+  border-radius: 24px;
+  padding: 40px 36px 36px;
+  margin-bottom: 32px;
+  overflow: hidden;
+  color: #fff;
+}
+
+.settings-header::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+}
+
+.settings-header::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: 30%;
+  width: 160px;
+  height: 160px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+}
+
+.settings-header-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.settings-header-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.settings-header h2.ant-typography {
+  color: #fff !important;
+  margin: 0 !important;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.settings-header-subtitle {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 15px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ─── Tabs Layout ─── */
+.settings-tabs {
+  min-height: 600px;
+}
+
+.settings-tabs .ant-tabs-nav {
+  width: 200px !important;
+}
+
+.settings-tabs .ant-tabs-nav .ant-tabs-nav-wrap {
+  background: #fff;
+  border-radius: 20px;
+  padding: 12px 10px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.settings-tabs .ant-tabs-tab {
+  padding: 13px 16px !important;
+  margin: 3px 0 !important;
+  border-radius: 12px !important;
+  justify-content: flex-start !important;
+  transition: all 0.25s ease !important;
+  font-size: 14px !important;
+}
+
+.settings-tabs .ant-tabs-tab:hover {
+  background: #f0f7f4 !important;
+}
+
+.settings-tabs .ant-tabs-tab-active {
+  background: linear-gradient(135deg, #e8f5ee 0%, #d4edda 100%) !important;
+  box-shadow: 0 2px 8px rgba(45, 106, 79, 0.12) !important;
+}
+
+.settings-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #1b4332 !important;
+  font-weight: 600 !important;
+}
+
+.settings-tabs .ant-tabs-ink-bar {
+  display: none !important;
+}
+
+.settings-tabs .ant-tabs-content-holder {
+  padding-left: 28px;
+}
+
+/* ─── Section Cards ─── */
+.settings-section-card {
+  border-radius: 20px !important;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  transition: box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.settings-section-card:hover {
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+.settings-section-card .ant-card-body {
+  padding: 28px 32px;
+}
+
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.settings-section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.settings-section-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(27, 67, 50, 0.25);
+}
+
+.settings-section-header h4.ant-typography {
+  margin: 0 !important;
+  color: #1b4332;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* ─── Setting Items ─── */
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid #f5f5f5;
+  transition: all 0.2s ease;
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-item-clickable {
+  cursor: pointer;
+  border-radius: 12px;
+  margin: 0 -16px;
+  padding: 16px !important;
+}
+
+.setting-item-clickable:hover {
+  background: #f9fdfb;
+}
+
+.setting-item-highlight {
+  background: linear-gradient(135deg, rgba(45, 106, 79, 0.04) 0%, rgba(64, 145, 108, 0.04) 100%);
+  margin: 4px -20px;
+  padding: 16px 20px !important;
+  border-radius: 14px;
+  border-bottom: none;
+  border: 1px solid rgba(45, 106, 79, 0.08);
+}
+
+.setting-item-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.setting-item-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #e8f5ee 0%, #d4edda 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.setting-item-clickable:hover .setting-item-icon {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.15);
+}
+
+.setting-item-text {
+  flex: 1;
+}
+
+.setting-item-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1b4332;
+  line-height: 1.3;
+}
+
+.setting-item-desc {
+  font-size: 13px;
+  color: #8c8c8c;
+  line-height: 1.4;
+}
+
+.setting-item-right {
+  margin-left: 16px;
+  flex-shrink: 0;
+}
+
+/* ─── Profile Section ─── */
+.settings-profile-avatar-wrap {
+  text-align: center;
+  margin-bottom: 36px;
+  padding: 32px 0;
+  background: linear-gradient(180deg, #f0f7f4 0%, transparent 100%);
+  border-radius: 16px;
+}
+
+.settings-profile-avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
+.settings-profile-avatar-container .ant-avatar {
+  box-shadow: 0 8px 32px rgba(27, 67, 50, 0.2);
+  border: 4px solid #fff;
+}
+
+.settings-profile-camera-btn {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  color: #1b4332 !important;
+  border: 2px solid #1b4332 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.settings-profile-camera-btn:hover {
+  background: #1b4332 !important;
+  color: #fff !important;
+  transform: scale(1.1);
+}
+
+.settings-profile-hint {
+  display: block;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #8c8c8c;
+}
+
+/* ─── Save Button ─── */
+.settings-save-btn {
+  border-radius: 14px !important;
+  height: 50px !important;
+  padding: 0 36px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(27, 67, 50, 0.3) !important;
+  transition: all 0.25s ease !important;
+}
+
+.settings-save-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(27, 67, 50, 0.4) !important;
+}
+
+/* ─── Preferences Alert ─── */
+.settings-prefs-alert {
+  border-radius: 16px !important;
+  margin-bottom: 24px;
+  border: 1px solid #b7eb8f !important;
+  background: linear-gradient(135deg, #f6ffed 0%, #edfae0 100%) !important;
+}
+
+.settings-prefs-alert .ant-alert-icon {
+  font-size: 18px;
+}
+
+/* ─── Account Danger Zone ─── */
+.settings-danger-zone {
+  margin-top: 28px;
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff2f0 0%, #fff0ed 100%);
+  border: 1px solid #ffccc7;
+}
+
+.settings-danger-zone .settings-delete-btn {
+  border-radius: 12px !important;
+  height: 48px !important;
+  font-weight: 600 !important;
+}
+
+.settings-danger-zone-text {
+  display: block;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #8c8c8c;
+}
+
+/* ─── Sign Out Item ─── */
+.setting-item-signout .setting-item-icon {
+  background: linear-gradient(135deg, #fff2f0 0%, #ffe7e4 100%) !important;
+}
+
+.setting-item-signout:hover {
+  background: #fff7f5 !important;
+}
+
+/* ─── Switch Styling ─── */
+.settings-section-card .ant-switch-checked {
+  background: #2d6a4f !important;
+}
+
+/* ─── Select Styling ─── */
+.settings-section-card .ant-select-selector {
+  border-radius: 10px !important;
+}
+
+/* ─── Form Inputs ─── */
+.settings-section-card .ant-input,
+.settings-section-card .ant-input-password {
+  border-radius: 12px !important;
+}
+
+.settings-section-card .ant-input-affix-wrapper {
+  border-radius: 12px !important;
+}
+
+/* ─── Modals ─── */
+.settings-modal .ant-modal-content {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.settings-modal .ant-modal-header {
+  padding: 20px 24px;
+}
+
+.settings-modal .ant-modal-body {
+  padding: 20px 24px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 0 16px 32px;
+  }
+
+  .settings-header {
+    padding: 28px 24px 24px;
+    border-radius: 18px;
+    margin-bottom: 24px;
+  }
+
+  .settings-header h2.ant-typography {
+    font-size: 22px;
+  }
+
+  .settings-header-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .settings-tabs {
+    flex-direction: column !important;
+  }
+
+  .settings-tabs .ant-tabs-nav {
+    width: 100% !important;
+    margin-bottom: 24px;
+  }
+
+  .settings-tabs .ant-tabs-nav .ant-tabs-nav-wrap {
+    border-radius: 16px;
+    padding: 8px;
+  }
+
+  .settings-tabs .ant-tabs-nav-list {
+    flex-direction: row !important;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+
+  .settings-tabs .ant-tabs-tab {
+    flex-shrink: 0;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+  }
+
+  .settings-tabs .ant-tabs-content-holder {
+    padding-left: 0 !important;
+  }
+
+  .settings-section-card .ant-card-body {
+    padding: 20px;
+  }
+
+  .setting-item-highlight {
+    margin: 4px -12px;
+    padding: 14px 12px !important;
+  }
+
+  .settings-profile-avatar-wrap {
+    padding: 24px 0;
+  }
+
+  .settings-danger-zone {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .setting-item-right {
+    margin-left: 62px;
+  }
+
+  .setting-item-clickable {
+    flex-direction: row;
+    align-items: center;
+  }
+}
